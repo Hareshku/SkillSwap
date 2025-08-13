@@ -1,196 +1,373 @@
-import { Link } from 'react-router-dom';
+import React from "react";
 
 const About = () => {
-  const values = [
-    {
-      title: 'Community First',
-      description: 'We believe in the power of community-driven learning where everyone has something valuable to contribute.',
-      icon: '🤝'
-    },
-    {
-      title: 'Inclusive Learning',
-      description: 'Our platform welcomes learners from all backgrounds, skill levels, and walks of life.',
-      icon: '🌍'
-    },
-    {
-      title: 'Quality Connections',
-      description: 'We focus on creating meaningful connections that lead to genuine learning experiences.',
-      icon: '⭐'
-    },
-    {
-      title: 'Continuous Growth',
-      description: 'Learning never stops, and we provide the tools to support your lifelong learning journey.',
-      icon: '📈'
-    }
-  ];
-
-  const team = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Founder & CEO',
-      description: 'Passionate educator with 10+ years in EdTech, dedicated to democratizing learning.',
-      image: '👩‍💼'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'CTO',
-      description: 'Full-stack developer and learning enthusiast, building the future of peer-to-peer education.',
-      image: '👨‍💻'
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Head of Community',
-      description: 'Community builder focused on creating safe and inclusive learning environments.',
-      image: '👩‍🎓'
-    }
-  ];
-
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-secondary-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              About GrowTogather
-            </h1>
-            <p className="text-xl md:text-2xl text-primary-100 max-w-3xl mx-auto">
-              Empowering learners worldwide to share knowledge, build connections, and grow together through collaborative education.
-            </p>
-          </div>
+      {/* 1. About SkillSwap - Hero Section */}
+      <div
+        className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-gray-800"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80')`,
+        }}
+      >
+        <div className="text-center text-white max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            About SkillSwap
+          </h1>
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
+            Learn more about our mission, values, and the team behind SkillSwap.
+          </p>
         </div>
-      </section>
+      </div>
 
-      {/* Mission Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+      {/* 2. Our Mission */}
+      <div className="py-20 bg-white">
+        <div
+          className="mx-auto px-4 sm:px-6 lg:px-8"
+          style={{ maxWidth: "100rem" }}
+        >
+          <div className="flex flex-col lg:flex-row gap-12 items-center">
+            {/* Left side - Content (70% width) */}
+            <div className="lg:w-7/10" style={{ width: "70%" }}>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
                 Our Mission
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                At GrowTogather, we believe that everyone has something valuable to teach and something important to learn. Our mission is to create a global community where knowledge flows freely, connections are meaningful, and learning never stops.
-              </p>
-              <p className="text-lg text-gray-600 mb-6">
-                We're breaking down traditional barriers to education by connecting learners directly with each other, fostering peer-to-peer learning that's accessible, affordable, and authentic.
-              </p>
-              <Link
-                to="/register"
-                className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors duration-200 inline-block"
-              >
-                Join Our Community
-              </Link>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-primary-100 to-secondary-100 rounded-lg p-8">
-                <div className="text-6xl mb-4">🌱</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Growing Together</h3>
-                <p className="text-gray-600">
-                  Every interaction on our platform is an opportunity for mutual growth and learning.
+              <div className="space-y-4 text-gray-600 leading-relaxed">
+                <p>
+                  At SkillSwap, our mission is to democratize knowledge sharing
+                  and create a global community where everyone can learn from
+                  each other. We believe that everyone has valuable skills and
+                  knowledge to share, and we're committed to making skill
+                  sharing accessible, enjoyable, and rewarding for all.
+                </p>
+                <p>
+                  We're building a platform that connects people who want to
+                  learn with those who want to teach, breaking down barriers to
+                  education and creating opportunities for personal and
+                  professional growth.
                 </p>
               </div>
             </div>
+
+            {/* Right side - Polaroid Images (30% width) */}
+            <div
+              className="relative h-96 w-full bg-slate-800 rounded-lg p-4 flex items-center justify-center"
+              style={{ width: "30%" }}
+            >
+              {/* Top Left Polaroid - Orange Background with Woman */}
+              <div className="absolute top-6 left-6 bg-white p-3 rounded-lg shadow-xl transform -rotate-12 hover:rotate-0 transition-transform duration-300">
+                <div className="w-28 h-28 bg-gradient-to-r from-orange-400 to-orange-500 rounded-md overflow-hidden mb-2 flex items-center justify-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Professional woman"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Top Right Polaroid - Man Portrait */}
+              <div className="absolute top-4 right-6 bg-white p-3 rounded-lg shadow-xl transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                <div className="w-28 h-28 bg-gray-300 rounded-md overflow-hidden mb-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Professional man"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Left Polaroid - Yellow Text Card */}
+              <div className="absolute bottom-6 left-4 bg-white p-3 rounded-lg shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300">
+                <div className="w-28 h-28 bg-yellow-400 rounded-md flex items-start justify-start p-2">
+                  <div className="text-black font-semibold text-sm leading-tight">
+                    Learning
+                    <br />
+                    session
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Right Polaroid - Team Collaboration */}
+              <div className="absolute bottom-4 right-4 bg-white p-3 rounded-lg shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300">
+                <div className="w-28 h-28 bg-gray-200 rounded-md overflow-hidden mb-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Team collaboration"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Right Image */}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Values Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. Our Values */}
+      <div className="py-20 bg-gray-50">
+        <div
+          className="mx-auto px-4 sm:px-6 lg:px-8"
+          style={{ maxWidth: "100rem" }}
+        >
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Our Values
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              These core values guide everything we do and shape the community we're building together.
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              These core principles guide everything we do at SkillSwap.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map((value, index) => (
-              <div key={index} className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div className="text-4xl mb-4">{value.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600">{value.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Team Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Passionate individuals dedicated to revolutionizing how we learn and grow together.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="text-6xl mb-4">{member.image}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-primary-600 font-medium mb-3">{member.role}</p>
-                <p className="text-gray-600">{member.description}</p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Community First */}
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">👥</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">
+                  Community First
+                </h3>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <p className="text-gray-600 leading-relaxed">
+                We believe in the power of community. By bringing together
+                diverse individuals with different skills and backgrounds, we
+                create a rich learning environment where everyone can grow and
+                thrive.
+              </p>
+            </div>
 
-      {/* Story Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-              Our Story
-            </h2>
-            <div className="text-lg text-gray-600 space-y-6">
-              <p>
-                GrowTogather was born from a simple observation: traditional education often creates barriers between learners, when the most powerful learning happens through connection and collaboration.
+            {/* Accessibility */}
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">🌐</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">
+                  Accessibility
+                </h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed">
+                Knowledge should be accessible to everyone. We're committed to
+                breaking down barriers to education and making skill sharing
+                available to people from all walks of life, regardless of their
+                background or circumstances.
               </p>
-              <p>
-                Our founders experienced firsthand how peer-to-peer learning could transform understanding and build lasting relationships. They envisioned a platform where anyone could be both teacher and student, where skills could be exchanged freely, and where learning communities could flourish naturally.
+            </div>
+
+            {/* Mutual Benefit */}
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">🤝</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">
+                  Mutual Benefit
+                </h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed">
+                We create win-win situations where both learners and teachers
+                benefit. Learners gain valuable skills, while teachers can share
+                their passion, refine their own understanding, and earn rewards
+                for their expertise.
               </p>
-              <p>
-                Today, we're proud to serve thousands of learners worldwide, facilitating meaningful connections and enabling knowledge exchange across borders, cultures, and disciplines. But this is just the beginning of our journey.
+            </div>
+
+            {/* Continuous Innovation */}
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">💡</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">
+                  Continuous Innovation
+                </h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed">
+                We're constantly looking for new ways to improve the learning
+                and teaching experience. By embracing innovation and staying at
+                the forefront of educational technology, we can better serve our
+                community.
               </p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Be Part of Our Story?
-          </h2>
-          <p className="text-xl mb-8 text-primary-100 max-w-2xl mx-auto">
-            Join our community of learners and start your journey of growth and connection today.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register"
-              className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-            >
-              Get Started
-            </Link>
-            <Link
-              to="/contact"
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors duration-200"
-            >
-              Contact Us
-            </Link>
+      {/* 4. Exchange Philosophy */}
+      <div className="py-20 bg-white">
+        <div
+          className="mx-auto px-4 sm:px-6 lg:px-8"
+          style={{ maxWidth: "100rem" }}
+        >
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Content */}
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                Exchange Philosophy
+              </h2>
+              <div className="w-16 h-1 bg-green-500 mb-8"></div>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                We believe that skill exchange surpasses traditional learning
+                for several reasons:
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4 mt-1">
+                    <div className="w-6 h-6 text-green-500">
+                      <span>✨</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    Mutual benefit - both participants receive value
+                  </p>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4 mt-1">
+                    <div className="w-6 h-6 text-green-500">
+                      <span>✨</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    Practical knowledge from practicing professionals
+                  </p>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4 mt-1">
+                    <div className="w-6 h-6 text-green-500">
+                      <span>✨</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    Building community and social connections
+                  </p>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4 mt-1">
+                    <div className="w-6 h-6 text-green-500">
+                      <span>✨</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    Accessibility for everyone, regardless of financial
+                    capabilities
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Image */}
+            <div>
+              <img
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Team collaboration"
+                className="rounded-lg shadow-lg w-full"
+              />
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* 5. Meet Our Team */}
+      <div className="py-20 bg-gray-50">
+        <div
+          className="mx-auto px-4 sm:px-6 lg:px-8"
+          style={{ maxWidth: "100rem" }}
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Meet Our Team
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              The passionate individuals behind SkillSwap who are dedicated to
+              our mission.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Sarah Johnson */}
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                  alt="Sarah Johnson"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-1">
+                Sarah Johnson
+              </h3>
+              <p className="text-sm text-gray-500 mb-3">CEO & Co-Founder</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Sarah is passionate about education and believes in the power of
+                skill sharing to transform lives.
+              </p>
+            </div>
+
+            {/* Michael Chen */}
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                  alt="Michael Chen"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-1">
+                Michael Chen
+              </h3>
+              <p className="text-sm text-gray-500 mb-3">CTO & Co-Founder</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Michael brings his technical expertise to build a platform that
+                connects learners and teachers.
+              </p>
+            </div>
+
+            {/* Emily Rodriguez */}
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                  alt="Emily Rodriguez"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-1">
+                Emily Rodriguez
+              </h3>
+              <p className="text-sm text-gray-500 mb-3">Head of Community</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Emily works to create a vibrant and supportive community where
+                everyone feels welcome.
+              </p>
+            </div>
+
+            {/* David Kim */}
+            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
+              <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                  alt="David Kim"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-1">
+                David Kim
+              </h3>
+              <p className="text-sm text-gray-500 mb-3">Head of Product</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                David focuses on creating an intuitive and enjoyable experience
+                for both learners and teachers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

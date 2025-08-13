@@ -34,7 +34,7 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      process.env.FRONTEND_URL || "http://localhost:5173",
+      process.env.FRONTEND_URL || "http://localhost:5000",
       "http://localhost:5174",
       "http://localhost:3000",
       "http://localhost:5175"
@@ -58,7 +58,7 @@ app.use('/api/', limiter);
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
+  process.env.FRONTEND_URL || "http://localhost:5000",
   "http://localhost:5174", // Alternative port for development
   "http://localhost:3000", // Common React port
   "http://localhost:5175"  // Another common Vite port
@@ -212,7 +212,7 @@ const startServer = async () => {
     
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📱 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      console.log(`📱 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5000'}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
