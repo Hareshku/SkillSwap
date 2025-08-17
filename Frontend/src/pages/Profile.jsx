@@ -389,7 +389,7 @@ const Profile = () => {
                   {connectionStatus?.status === 'none' || connectionStatus?.canSendRequest ? (
                     <button
                       onClick={() => setShowConnectionModal(true)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
+                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2 h-10 w-36 m-2.5"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.25" />
@@ -399,7 +399,7 @@ const Profile = () => {
                   ) : connectionStatus?.status === 'pending' ? (
                     <button
                       disabled
-                      className="bg-yellow-500 text-white px-4 py-2 rounded-md cursor-not-allowed flex items-center space-x-2"
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-md cursor-not-allowed flex items-center space-x-2 h-10 w-36 m-2.5"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -409,7 +409,7 @@ const Profile = () => {
                   ) : connectionStatus?.status === 'accepted' ? (
                     <button
                       disabled
-                      className="bg-green-500 text-white px-4 py-2 rounded-md cursor-not-allowed flex items-center space-x-2"
+                      className="bg-green-500 text-white px-4 py-2 rounded-md cursor-not-allowed flex items-center space-x-2 h-10 w-36 m-2.5"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -421,7 +421,7 @@ const Profile = () => {
                   {/* Message Button */}
                   <button
                     onClick={handleMessageClick}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2 h-10 w-36 m-2.5"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -430,7 +430,7 @@ const Profile = () => {
                   </button>
                   <button
                     onClick={() => setShowScheduleModal(true)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2 h-10 w-36 m-2.5"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -439,7 +439,7 @@ const Profile = () => {
                   </button>
                   <button
                     onClick={() => setShowReportModal(true)}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2 h-10 w-36 m-2.5"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -669,11 +669,10 @@ const Profile = () => {
                       <div key={index} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
                         <div className="flex items-center space-x-4">
                           <span className="font-medium text-gray-900">{skill.skill_name}</span>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            skill.skill_type === 'teach'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs rounded-full ${skill.skill_type === 'teach'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-blue-100 text-blue-800'
+                            }`}>
                             {skill.skill_type === 'teach' ? 'Can Teach' : 'Want to Learn'}
                           </span>
                           <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full capitalize">
