@@ -33,11 +33,11 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="w-[100%] mx-auto px-6 sm:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-[6rem]">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="w-6 h-6 bg-black rounded-full"></div>
+              <div className="w-[2.5rem] h-[2.5rem] bg-black rounded-full"></div>
             </Link>
           </div>
 
@@ -50,7 +50,7 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-2 text-sm font-medium transition-colors duration-200 relative ${isActive(link.path)
+                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${isActive(link.path)
                       ? "text-gray-900"
                       : "text-gray-500 hover:text-gray-900"
                       }`}
