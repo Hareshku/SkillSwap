@@ -177,13 +177,13 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-gray-500 hover:text-purple-600 px-3 py-2 text-2xl font-medium transition-colors duration-200"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full text-2xl font-medium transition-colors duration-200"
                 >
                   Sign Up
                 </Link>
