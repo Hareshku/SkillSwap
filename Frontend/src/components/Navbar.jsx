@@ -20,7 +20,6 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/", public: true },
     { name: "About", path: "/about", public: true },
-    { name: "Services", path: "/services", public: false },
     { name: "Discover", path: "/discover", public: false },
     { name: "Contact", path: "/contact", public: true },
   ];
@@ -70,8 +69,8 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-2 text-sm font-medium transition-colors duration-200 relative ${isActive(link.path)
-                      ? "text-gray-900"
+                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${isActive(link.path)
+                      ? "text-gray-500"
                       : "text-gray-500 hover:text-gray-900"
                       }`}
                   >

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   // FAQ state management
@@ -98,12 +99,19 @@ const Home = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="bg-primary-10 hover:bg-secondary-10 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+            <Link
+              to="/discover"
+              className="bg-primary-10 hover:bg-secondary-10 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl inline-block"
+            >
               Find Skills to Learn
-            </button>
-            <button className="border-2 border-white text-white hover:bg-white hover:text-gray-800 font-semibold py-3 px-8 rounded-lg transition-all duration-200">
+            </Link>
+
+            <Link
+              to="/discover"
+              className="border-2 border-white text-white hover:bg-white hover:text-gray-800 font-semibold py-3 px-8 rounded-lg transition-all duration-200 inline-block"
+            >
               Share Your Skills
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -401,11 +409,10 @@ const Home = () => {
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`px-6 py-2 rounded-full font-medium transition-colors ${
-                    activeCategory === category
-                      ? "bg-green-500 text-white hover:bg-green-600"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                  className={`px-6 py-2 rounded-full font-medium transition-colors ${activeCategory === category
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
                 >
                   {category}
                 </button>
@@ -509,9 +516,13 @@ const Home = () => {
                 <p className="text-gray-600 mb-6 text-lg">
                   Didn't find an answer to your question?
                 </p>
-                <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-8 rounded-lg transition-colors duration-200">
-                  Ask the Community
-                </button>
+                <Link
+                  to="/contact"
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-block"
+                >
+                  Contact us
+                </Link>
+
               </div>
             </div>
           </div>
@@ -652,9 +663,12 @@ const Home = () => {
                 <p className="text-gray-500 text-lg mb-8">
                   Do you want to start your journey?
                 </p>
-                <button className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-8 rounded-md transition-colors duration-200">
+                <Link
+                  to="/discover"
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-8 rounded-md transition-colors duration-200 inline-block"
+                >
                   Start Exchanging Skills
-                </button>
+                </Link>
               </div>
             </div>
           </div>
