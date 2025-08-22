@@ -1,4 +1,4 @@
-import { User, Post, Report, Message, Meeting, Badge, Skill } from '../models/index.js';
+import { User, Post, Report, Message, Meeting, Badge, Skill, Contact } from '../models/index.js';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import sequelize from '../config/database.js';
@@ -14,7 +14,9 @@ export const getDashboardStats = async (req, res) => {
       totalReports,
       pendingReports,
       totalMeetings,
-      totalMessages
+      totalMessages,
+      totalContacts,
+      pendingContacts
     ] = await Promise.all([
       User.count(),
       User.count({ where: { is_active: true } }),
@@ -23,7 +25,9 @@ export const getDashboardStats = async (req, res) => {
       Report.count(),
       Report.count({ where: { status: 'pending' } }),
       Meeting.count(),
-      Message.count()
+      Message.count(),
+      Contact.count(),
+      Contact.count({ where: { status: 'pending' } })
     ]);
 
     // Get user registration stats for the last 30 days
@@ -55,6 +59,10 @@ export const getDashboardStats = async (req, res) => {
       },
       messages: {
         total: totalMessages
+      },
+      contacts: {
+        total: totalContacts,
+        pending: pendingContacts
       }
     };
 

@@ -67,9 +67,8 @@ export const createReport = async (req, res) => {
       reported_user_id: reportedUserId,
       reported_post_id: reportedPostId,
       report_type: reportType,
-      reason,
-      description,
-      evidence: Array.isArray(evidence) ? evidence : [evidence],
+      reason: description ? `${reason}\n\nAdditional Details: ${description}` : reason,
+      evidence_urls: Array.isArray(evidence) ? evidence : (evidence ? [evidence] : null),
       status: 'pending'
     });
 
@@ -229,8 +228,8 @@ export const updateReport = async (req, res) => {
     }
 
     await report.update({
-      description,
-      evidence: Array.isArray(evidence) ? evidence : [evidence],
+      reason: description ? `${report.reason}\n\nUpdated Details: ${description}` : report.reason,
+      evidence_urls: Array.isArray(evidence) ? evidence : (evidence ? [evidence] : null),
       updated_at: new Date()
     });
 

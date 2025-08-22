@@ -77,7 +77,11 @@ export const sendMessage = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Message sent successfully',
-      data: messageWithSender
+      data: {
+        ...messageWithSender.toJSON(),
+        created_at: messageWithSender.created_at?.toISOString(),
+        updated_at: messageWithSender.updated_at?.toISOString()
+      }
     });
   } catch (error) {
     console.error('Send message error:', error);
@@ -134,10 +138,18 @@ export const getConversation = async (req, res) => {
       }
     );
 
+    // Format dates properly for all messages
+    const formattedMessages = messages.rows.reverse().map(message => ({
+      ...message.toJSON(),
+      created_at: message.created_at?.toISOString(),
+      updated_at: message.updated_at?.toISOString(),
+      read_at: message.read_at?.toISOString()
+    }));
+
     res.json({
       success: true,
       data: {
-        messages: messages.rows.reverse(), // Reverse to show oldest first
+        messages: formattedMessages,
         pagination: {
           total: messages.count,
           page,
@@ -185,11 +197,11 @@ export const getUserConversations = async (req, res) => {
 
     // Group conversations by partner
     const conversationMap = new Map();
-    
+
     conversations.forEach(message => {
       const partnerId = message.sender_id === userId ? message.receiver_id : message.sender_id;
       const partner = message.sender_id === userId ? message.receiver : message.sender;
-      
+
       if (!conversationMap.has(partnerId)) {
         conversationMap.set(partnerId, {
           partner,
@@ -197,14 +209,22 @@ export const getUserConversations = async (req, res) => {
           unreadCount: 0
         });
       }
-      
+
       // Count unread messages
       if (message.receiver_id === userId && !message.is_read) {
         conversationMap.get(partnerId).unreadCount++;
       }
     });
 
-    const conversationList = Array.from(conversationMap.values());
+    // Format dates properly for conversations
+    const conversationList = Array.from(conversationMap.values()).map(conversation => ({
+      ...conversation,
+      lastMessage: conversation.lastMessage ? {
+        ...conversation.lastMessage.toJSON(),
+        created_at: conversation.lastMessage.created_at?.toISOString(),
+        updated_at: conversation.lastMessage.updated_at?.toISOString()
+      } : null
+    }));
 
     res.json({
       success: true,
@@ -357,10 +377,18 @@ export const searchMessages = async (req, res) => {
       order: [['created_at', 'DESC']]
     });
 
+    // Format dates properly for search results
+    const formattedMessages = messages.rows.map(message => ({
+      ...message.toJSON(),
+      created_at: message.created_at?.toISOString(),
+      updated_at: message.updated_at?.toISOString(),
+      read_at: message.read_at?.toISOString()
+    }));
+
     res.json({
       success: true,
       data: {
-        messages: messages.rows,
+        messages: formattedMessages,
         pagination: {
           total: messages.count,
           page,

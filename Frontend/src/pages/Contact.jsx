@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from 'axios';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -15,12 +18,30 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await axios.post('/api/contact', formData);
+
+      if (response.data.success) {
+        setSubmitStatus({
+          type: 'success',
+          message: response.data.message
+        });
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: error.response?.data?.message || 'Failed to send your message. Please try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -39,6 +60,17 @@ const Contact = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Send us a Message
             </h2>
+
+            {/* Status Message */}
+            {submitStatus && (
+              <div className={`p-4 rounded-lg mb-6 ${submitStatus.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-800'
+                : 'bg-red-50 border border-red-200 text-red-800'
+                }`}>
+                <p className="text-sm font-medium">{submitStatus.message}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
@@ -114,9 +146,10 @@ const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full bg-primary-10 hover:bg-secondary-10 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+                disabled={isSubmitting}
+                className="w-full bg-primary-10 hover:bg-secondary-10 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
               >
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

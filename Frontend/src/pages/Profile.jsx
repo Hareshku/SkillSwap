@@ -31,7 +31,7 @@ const Profile = () => {
   const [pendingRequests, setPendingRequests] = useState(0);
 
   // Check if viewing own profile or another user's profile
-  const isOwnProfile = !userId || userId === user?.id;
+  const isOwnProfile = !userId || String(userId) === String(user?.id) || parseInt(userId) === user?.id;
 
   const {
     register,

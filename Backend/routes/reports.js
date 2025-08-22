@@ -17,22 +17,22 @@ const router = express.Router();
 const createReportValidation = [
   body('reportedUserId')
     .optional()
-    .isUUID()
+    .isInt({ min: 1 })
     .withMessage('Invalid reported user ID'),
   body('reportedPostId')
     .optional()
-    .isUUID()
+    .isInt({ min: 1 })
     .withMessage('Invalid reported post ID'),
   body('reportType')
     .notEmpty()
     .withMessage('Report type is required')
-    .isIn(['harassment', 'spam', 'inappropriate_content', 'fake_profile', 'scam', 'other'])
+    .isIn(['inappropriate_behavior', 'spam', 'harassment', 'fake_profile', 'inappropriate_content', 'scam', 'other'])
     .withMessage('Invalid report type'),
   body('reason')
     .notEmpty()
     .withMessage('Reason is required')
-    .isLength({ min: 10, max: 500 })
-    .withMessage('Reason must be between 10 and 500 characters'),
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('Reason must be between 10 and 1000 characters'),
   body('description')
     .optional()
     .isLength({ max: 2000 })
@@ -64,7 +64,7 @@ const updateReportValidation = [
 
 const reportIdValidation = [
   param('reportId')
-    .isUUID()
+    .isInt({ min: 1 })
     .withMessage('Invalid report ID')
 ];
 
@@ -82,21 +82,21 @@ const paginationValidation = [
 // Custom validation to ensure either reportedUserId or reportedPostId is provided
 const validateReportTarget = (req, res, next) => {
   const { reportedUserId, reportedPostId } = req.body;
-  
+
   if (!reportedUserId && !reportedPostId) {
     return res.status(400).json({
       success: false,
       message: 'Either reported user ID or reported post ID must be provided'
     });
   }
-  
+
   if (reportedUserId && reportedPostId) {
     return res.status(400).json({
       success: false,
       message: 'Cannot report both user and post in the same report'
     });
   }
-  
+
   next();
 };
 

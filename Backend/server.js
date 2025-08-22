@@ -22,6 +22,7 @@ import adminRoutes from './routes/admin.js';
 import connectionRoutes from './routes/connections.js';
 import badgeRoutes from './routes/badges.js';
 import recommendationRoutes from './routes/recommendations.js';
+import contactRoutes from './routes/contact.js';
 
 // Load environment variables
 dotenv.config();
@@ -51,7 +52,7 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 10000, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
@@ -88,6 +89,14 @@ app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Configure JSON serialization to handle dates properly
+app.set('json replacer', (key, value) => {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  return value;
+});
+
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -110,6 +119,7 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/badges', badgeRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 
@@ -133,7 +143,7 @@ io.on('connection', (socket) => {
   socket.on('send_message', (data) => {
     // Emit to conversation room
     socket.to(`conversation_${data.conversationId}`).emit('new_message', data);
-    
+
     // Emit to receiver's personal room for notifications
     socket.to(`user_${data.receiverId}`).emit('message_notification', {
       senderId: data.senderId,
@@ -166,7 +176,7 @@ io.on('connection', (socket) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
+
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
@@ -174,7 +184,7 @@ app.use((err, req, res, next) => {
       errors: err.errors
     });
   }
-  
+
   if (err.name === 'SequelizeUniqueConstraintError') {
     return res.status(400).json({
       success: false,
@@ -182,11 +192,11 @@ app.use((err, req, res, next) => {
       field: err.errors[0].path
     });
   }
-  
+
   res.status(500).json({
     success: false,
-    message: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
+    message: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
       : err.message
   });
 });
@@ -206,10 +216,10 @@ const startServer = async () => {
   try {
     // Test database connection
     await testConnection();
-    
+
     // Sync database (create tables)
     await syncDatabase(false); // Set to true to force recreate tables
-    
+
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📱 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5000'}`);

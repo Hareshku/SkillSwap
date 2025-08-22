@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
 const CommunityRegistration = () => {
-  const { user, token } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
@@ -76,7 +76,8 @@ const CommunityRegistration = () => {
 
       if (response.data.success) {
         alert('Profile completed successfully! Welcome to GrowTogather!');
-        // Update user context or refresh user data
+        // Update user context to reflect profile completion
+        updateUser({ profile_completed: true });
         navigate('/discover');
       }
     } catch (error) {
@@ -110,14 +111,14 @@ const CommunityRegistration = () => {
             <div className="flex flex-col items-center">
               <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                 {profilePicturePreview ? (
-                  <img 
-                    src={profilePicturePreview} 
-                    alt="Profile preview" 
+                  <img
+                    src={profilePicturePreview}
+                    alt="Profile preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                   </svg>
                 )}
               </div>

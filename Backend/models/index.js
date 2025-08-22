@@ -9,6 +9,7 @@ import Feedback from './Feedback.js';
 import { Skill, UserSkill } from './Skill.js';
 import Connection from './Connection.js';
 import RecommendationTracking from './RecommendationTracking.js';
+import Contact from './Contact.js';
 
 // Define associations
 
@@ -24,28 +25,28 @@ User.hasMany(Feedback, { foreignKey: 'giver_id', as: 'feedbackGiven' });
 User.hasMany(Feedback, { foreignKey: 'receiver_id', as: 'feedbackReceived' });
 
 // User-Badge many-to-many relationship
-User.belongsToMany(Badge, { 
-  through: UserBadge, 
+User.belongsToMany(Badge, {
+  through: UserBadge,
   foreignKey: 'user_id',
   otherKey: 'badge_id',
   as: 'badges'
 });
-Badge.belongsToMany(User, { 
-  through: UserBadge, 
+Badge.belongsToMany(User, {
+  through: UserBadge,
   foreignKey: 'badge_id',
   otherKey: 'user_id',
   as: 'users'
 });
 
 // User-Skill many-to-many relationship
-User.belongsToMany(Skill, { 
-  through: UserSkill, 
+User.belongsToMany(Skill, {
+  through: UserSkill,
   foreignKey: 'user_id',
   otherKey: 'skill_id',
   as: 'skills'
 });
-Skill.belongsToMany(User, { 
-  through: UserSkill, 
+Skill.belongsToMany(User, {
+  through: UserSkill,
   foreignKey: 'skill_id',
   otherKey: 'user_id',
   as: 'users'
@@ -105,6 +106,10 @@ Post.hasMany(RecommendationTracking, { foreignKey: 'recommended_post_id', as: 'r
 RecommendationTracking.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 RecommendationTracking.belongsTo(Post, { foreignKey: 'recommended_post_id', as: 'post' });
 
+// Contact associations
+Contact.belongsTo(User, { foreignKey: 'responded_by', as: 'responder' });
+User.hasMany(Contact, { foreignKey: 'responded_by', as: 'contactResponses' });
+
 // Sync database
 const syncDatabase = async (force = false) => {
   try {
@@ -130,6 +135,7 @@ export {
   UserSkill,
   Connection,
   RecommendationTracking,
+  Contact,
   syncDatabase
 };
 
@@ -148,5 +154,6 @@ export default {
   UserSkill,
   Connection,
   RecommendationTracking,
+  Contact,
   syncDatabase
 };

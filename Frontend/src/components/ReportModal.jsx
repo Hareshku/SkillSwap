@@ -12,6 +12,7 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
   const [loading, setLoading] = useState(false);
 
   const reportTypes = [
+    { value: 'inappropriate_behavior', label: 'Inappropriate Behavior' },
     { value: 'harassment', label: 'Harassment or Bullying' },
     { value: 'spam', label: 'Spam or Unwanted Content' },
     { value: 'inappropriate_content', label: 'Inappropriate Content' },
@@ -78,7 +79,7 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
 
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
           <p className="text-sm text-yellow-800">
-            <strong>Important:</strong> Please only report content that violates our community guidelines. 
+            <strong>Important:</strong> Please only report content that violates our community guidelines.
             False reports may result in action against your account.
           </p>
         </div>
@@ -117,10 +118,10 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
               placeholder="Please explain why you are reporting this user..."
               required
               minLength={10}
-              maxLength={500}
+              maxLength={1000}
             />
             <p className="mt-1 text-xs text-gray-500">
-              {formData.reason.length}/500 characters (minimum 10)
+              {formData.reason.length}/1000 characters (minimum 10)
             </p>
           </div>
 
