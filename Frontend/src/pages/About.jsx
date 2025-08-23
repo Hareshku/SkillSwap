@@ -33,14 +33,14 @@ const About = () => {
                 Our Mission
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
-                <p>
+                <p class="text-[1.4rem]">
                   At SkillSwap, our mission is to democratize knowledge sharing
                   and create a global community where everyone can learn from
                   each other. We believe that everyone has valuable skills and
                   knowledge to share, and we're committed to making skill
                   sharing accessible, enjoyable, and rewarding for all.
                 </p>
-                <p>
+                <p class="text-[1.4rem]">
                   We're building a platform that connects people who want to
                   learn with those who want to teach, breaking down barriers to
                   education and creating opportunities for personal and
@@ -126,11 +126,11 @@ const About = () => {
                 <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-white text-lg">👥</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-[2rem] font-bold text-gray-800">
                   Community First
                 </h3>
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-[1.4rem]">
                 We believe in the power of community. By bringing together
                 diverse individuals with different skills and backgrounds, we
                 create a rich learning environment where everyone can grow and
@@ -144,11 +144,11 @@ const About = () => {
                 <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-white text-lg">🌐</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-[2rem] font-bold text-gray-800">
                   Accessibility
                 </h3>
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-[1.4rem]">
                 Knowledge should be accessible to everyone. We're committed to
                 breaking down barriers to education and making skill sharing
                 available to people from all walks of life, regardless of their
@@ -162,11 +162,11 @@ const About = () => {
                 <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-white text-lg">🤝</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-[2rem] font-bold text-gray-800">
                   Mutual Benefit
                 </h3>
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-[1.4rem]">
                 We create win-win situations where both learners and teachers
                 benefit. Learners gain valuable skills, while teachers can share
                 their passion, refine their own understanding, and earn rewards
@@ -180,11 +180,11 @@ const About = () => {
                 <div className="w-8 h-8 bg-primary-10 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-white text-lg">💡</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-[2rem] font-bold text-gray-800">
                   Continuous Innovation
                 </h3>
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-[1.4rem]">
                 We're constantly looking for new ways to improve the learning
                 and teaching experience. By embracing innovation and staying at
                 the forefront of educational technology, we can better serve our
@@ -208,7 +208,7 @@ const About = () => {
                 Exchange Philosophy
               </h2>
               <div className="w-16 h-1 bg-green-500 mb-8"></div>
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-gray-600 mb-8 leading-relaxed text-[1.4rem]">
                 We believe that skill exchange surpasses traditional learning
                 for several reasons:
               </p>
@@ -220,7 +220,7 @@ const About = () => {
                       <span>✨</span>
                     </div>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-[1.4rem]">
                     Mutual benefit - both participants receive value
                   </p>
                 </div>
@@ -231,7 +231,7 @@ const About = () => {
                       <span>✨</span>
                     </div>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-[1.4rem]">
                     Practical knowledge from practicing professionals
                   </p>
                 </div>
@@ -242,7 +242,7 @@ const About = () => {
                       <span>✨</span>
                     </div>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-[1.4rem]">
                     Building community and social connections
                   </p>
                 </div>
@@ -253,7 +253,7 @@ const About = () => {
                       <span>✨</span>
                     </div>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-[1.4rem]">
                     Accessibility for everyone, regardless of financial
                     capabilities
                   </p>
@@ -283,7 +283,7 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Meet Our Team
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-[1.4rem] max-w-2xl mx-auto">
               The passionate individuals behind SkillSwap who are dedicated to
               our mission.
             </p>
