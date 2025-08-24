@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import SkillExchangeCard from '../components/SkillExchangeCard';
 
 const Discover = () => {
   const { user, token } = useAuth();
@@ -126,20 +127,20 @@ const Discover = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Discover Skills</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Discover Skills</h1>
+              <p className="text-gray-300 mt-2">
                 Find learning opportunities and connect with fellow learners
               </p>
             </div>
             <button
               onClick={handleCreatePostClick}
-              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-purple-500/25"
             >
               Create Post
             </button>
@@ -147,7 +148,7 @@ const Discover = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-gray-900/60 backdrop-blur-sm rounded-lg shadow-lg border border-gray-700/50 p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -155,14 +156,14 @@ const Discover = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search posts by title, skills, or description..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
               />
             </div>
             <div>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
               >
                 <option value="all">All Posts</option>
                 <option value="exchange">Skill Exchange</option>
@@ -172,7 +173,7 @@ const Discover = () => {
             </div>
             <button
               onClick={handleSearch}
-              className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
             >
               Search
             </button>
@@ -180,85 +181,32 @@ const Discover = () => {
         </div>
 
         {/* Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
           {loading ? (
             <div className="col-span-full text-center py-12">
-              <div className="text-gray-500">Loading posts...</div>
+              <div className="text-gray-300">Loading posts...</div>
             </div>
           ) : posts.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="text-xl font-semibold text-white mb-2">No posts found</h3>
+              <p className="text-gray-300 mb-4">
                 Be the first to create a skill exchange post!
               </p>
               <button
                 onClick={handleCreatePostClick}
-                className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
               >
                 Create Your First Post
               </button>
             </div>
           ) : (
-            posts.map((post) => (
-              <div key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                {/* Post Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                      <span className="text-primary-600 font-semibold">
-                        {post.author?.full_name?.charAt(0) || post.author?.username?.charAt(0) || 'U'}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">{post.author?.full_name || post.author?.username}</h4>
-                      <p className="text-sm text-gray-500">{post.author?.profession}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => viewProfile(post.author?.id)}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                  >
-                    View Profile
-                  </button>
-                </div>
-
-                {/* Post Content */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-3">{post.description}</p>
-                </div>
-
-                {/* Skills */}
-                <div className="space-y-3 mb-4">
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-700 mb-1">Skills to Teach:</h5>
-                    <div className="flex flex-wrap gap-1">
-                      {post.skills_to_teach?.map((skill, index) => (
-                        <span key={index} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-700 mb-1">Skills to Learn:</h5>
-                    <div className="flex flex-wrap gap-1">
-                      {post.skills_to_learn?.map((skill, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Post Meta */}
-                <div className="flex items-center justify-between text-sm text-gray-500 pt-3 border-t border-gray-100">
-                  <span>{post.preferred_meeting_type}</span>
-                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                </div>
-              </div>
+            posts.map((post, index) => (
+              <SkillExchangeCard
+                key={post.id}
+                post={post}
+                onViewProfile={viewProfile}
+              />
             ))
           )}
         </div>
@@ -508,6 +456,8 @@ const Discover = () => {
             </div>
           </div>
         )}
+
+
       </div>
     </div>
   );
