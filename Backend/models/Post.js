@@ -72,7 +72,7 @@ const Post = sequelize.define('Post', {
     comment: 'Required if preferred_meeting_type includes offline'
   },
   status: {
-    type: DataTypes.ENUM('active', 'paused', 'completed', 'archived'),
+    type: DataTypes.ENUM('active', 'paused', 'completed', 'archived', 'removed'),
     defaultValue: 'active'
   },
   is_approved: {

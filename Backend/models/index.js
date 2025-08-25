@@ -10,6 +10,7 @@ import { Skill, UserSkill } from './Skill.js';
 import Connection from './Connection.js';
 import RecommendationTracking from './RecommendationTracking.js';
 import Contact from './Contact.js';
+import Review from './Review.js';
 
 // Define associations
 
@@ -23,6 +24,8 @@ User.hasMany(Report, { foreignKey: 'reporter_id', as: 'reportsMade' });
 User.hasMany(Report, { foreignKey: 'reported_user_id', as: 'reportsReceived' });
 User.hasMany(Feedback, { foreignKey: 'giver_id', as: 'feedbackGiven' });
 User.hasMany(Feedback, { foreignKey: 'receiver_id', as: 'feedbackReceived' });
+User.hasMany(Review, { foreignKey: 'reviewer_id', as: 'reviewsGiven' });
+User.hasMany(Review, { foreignKey: 'reviewee_id', as: 'reviewsReceived' });
 
 // User-Badge many-to-many relationship
 User.belongsToMany(Badge, {
@@ -70,6 +73,7 @@ Meeting.belongsTo(User, { foreignKey: 'participant_id', as: 'participant' });
 Meeting.belongsTo(User, { foreignKey: 'cancelled_by', as: 'cancelledBy' });
 Meeting.belongsTo(Post, { foreignKey: 'post_id', as: 'relatedPost' });
 Meeting.hasMany(Feedback, { foreignKey: 'meeting_id', as: 'feedback' });
+Meeting.hasMany(Review, { foreignKey: 'meeting_id', as: 'reviews' });
 
 // Report associations
 Report.belongsTo(User, { foreignKey: 'reporter_id', as: 'reporter' });
@@ -82,6 +86,11 @@ Feedback.belongsTo(User, { foreignKey: 'giver_id', as: 'giver' });
 Feedback.belongsTo(User, { foreignKey: 'receiver_id', as: 'receiver' });
 Feedback.belongsTo(Meeting, { foreignKey: 'meeting_id', as: 'meeting' });
 Feedback.belongsTo(Post, { foreignKey: 'post_id', as: 'post' });
+
+// Review associations
+Review.belongsTo(User, { foreignKey: 'reviewer_id', as: 'reviewer' });
+Review.belongsTo(User, { foreignKey: 'reviewee_id', as: 'reviewee' });
+Review.belongsTo(Meeting, { foreignKey: 'meeting_id', as: 'meeting' });
 
 // UserBadge associations
 UserBadge.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
@@ -136,6 +145,7 @@ export {
   Connection,
   RecommendationTracking,
   Contact,
+  Review,
   syncDatabase
 };
 
@@ -155,5 +165,6 @@ export default {
   Connection,
   RecommendationTracking,
   Contact,
+  Review,
   syncDatabase
 };

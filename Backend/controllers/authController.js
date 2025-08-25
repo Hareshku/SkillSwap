@@ -51,15 +51,15 @@ export const register = async (req, res) => {
     });
 
     // Generate tokens
-    const token = generateToken({ 
-      userId: user.id, 
-      email: user.email, 
-      role: user.role 
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role
     });
-    
-    const refreshToken = generateRefreshToken({ 
-      userId: user.id, 
-      email: user.email 
+
+    const refreshToken = generateRefreshToken({
+      userId: user.id,
+      email: user.email
     });
 
     // Update last login

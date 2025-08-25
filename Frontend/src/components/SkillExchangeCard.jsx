@@ -24,7 +24,7 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
 
   return (
     <div
-      className={`relative group cursor-pointer transition-all duration-500 transform max-w-sm w-full ${isHovered ? 'scale-105' : 'hover:scale-102'
+      className={`relative group transition-all duration-500 transform max-w-sm w-full ${isHovered ? 'scale-105' : 'hover:scale-102'
         }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -54,8 +54,25 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div className={`relative transition-all duration-300 ${isHovered ? 'scale-110 rotate-6' : ''}`}>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                {getInitials(post.author?.full_name || post.author?.username)}
+              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+                {post.author?.profile_picture ? (
+                  <img
+                    src={post.author.profile_picture}
+                    alt={post.author?.full_name || post.author?.username}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to initials if image fails to load
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
+                  className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                  style={{ display: post.author?.profile_picture ? 'none' : 'flex' }}
+                >
+                  {getInitials(post.author?.full_name || post.author?.username)}
+                </div>
               </div>
               <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900 animate-pulse"></div>
             </div>
@@ -75,8 +92,17 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
             <Sparkles className={`w-4 h-4 text-yellow-400 transition-all duration-300 ${isHovered ? 'animate-spin text-yellow-300' : 'animate-pulse'
               }`} />
             <button
-              onClick={() => onViewProfile(post.author?.id)}
-              className="text-blue-400 hover:text-blue-300 transition-colors text-xs font-medium hover:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('View Profile clicked, post:', post);
+                console.log('Author ID:', post.author?.id);
+                if (post.author?.id) {
+                  onViewProfile(post.author.id);
+                } else {
+                  console.error('No author ID found in post data');
+                }
+              }}
+              className="text-blue-400 hover:text-blue-300 transition-colors text-xs font-medium hover:underline cursor-pointer z-10 relative"
             >
               View Profile
             </button>

@@ -103,6 +103,11 @@ const Discover = () => {
   };
 
   const viewProfile = (userId) => {
+    console.log('Navigating to profile with userId:', userId);
+    if (!userId) {
+      console.error('No userId provided');
+      return;
+    }
     navigate(`/profile/${userId}`);
   };
 

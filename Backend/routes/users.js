@@ -146,6 +146,7 @@ router.get('/profile/:userId',
 // Update current user's profile
 router.put('/profile',
   authenticateToken,
+  upload.single('profile_picture'),
   updateProfileValidation,
   validateRequest,
   updateUserProfile
@@ -190,14 +191,14 @@ router.use((error, req, res, next) => {
       });
     }
   }
-  
+
   if (error.message === 'Invalid file type. Only JPEG, PNG and GIF are allowed.') {
     return res.status(400).json({
       success: false,
       message: error.message
     });
   }
-  
+
   next(error);
 });
 

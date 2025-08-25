@@ -387,8 +387,9 @@ export const moderatePost = async (req, res) => {
     const adminId = req.user.id;
 
     if (action === 'remove') {
-      // For removal, we keep the status but mark it as removed
+      // For removal, set status to removed and mark it as removed
       await post.update({
+        status: 'removed',
         removed_reason: reason,
         removed_at: new Date(),
         removed_by: adminId

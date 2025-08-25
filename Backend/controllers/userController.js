@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     const user = await User.findByPk(userId, {
       attributes: { exclude: ['password'] },
       include: [
@@ -76,7 +76,8 @@ export const updateUserProfile = async (req, res) => {
       });
     }
 
-    await user.update({
+    // Handle profile picture upload
+    const updateData = {
       full_name,
       bio,
       linkedin_url,
@@ -88,15 +89,22 @@ export const updateUserProfile = async (req, res) => {
       state,
       country,
       timezone
-    });
+    };
+
+    // Add profile picture if uploaded
+    if (req.file) {
+      updateData.profile_picture = `/uploads/${req.file.filename}`;
+    }
+
+    await user.update(updateData);
 
     // Update skills if provided
     if (skills && Array.isArray(skills)) {
       // Remove existing skills
       await Skill.destroy({ where: { user_id: userId } });
-      
+
       // Add new skills
-      const skillPromises = skills.map(skill => 
+      const skillPromises = skills.map(skill =>
         Skill.create({
           user_id: userId,
           skill_name: skill.skill_name,
@@ -140,7 +148,7 @@ export const updateUserProfile = async (req, res) => {
 export const uploadProfilePicture = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -149,7 +157,7 @@ export const uploadProfilePicture = async (req, res) => {
     }
 
     const profilePictureUrl = `/uploads/${req.file.filename}`;
-    
+
     await User.update(
       { profile_picture: profilePictureUrl },
       { where: { id: userId } }
@@ -216,7 +224,7 @@ export const changePassword = async (req, res) => {
 export const getUserRecommendations = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     // Get current user's skills
     const userSkills = await Skill.findAll({
       where: { user_id: userId },

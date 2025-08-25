@@ -63,7 +63,7 @@ const CommunityRegistration = () => {
 
         formData.append('profile_picture', profilePicture);
         requestData = formData;
-        headers['Content-Type'] = 'multipart/form-data';
+        // Don't set Content-Type for FormData - let axios handle it automatically
       } else {
         // Use JSON if no profile picture
         requestData = data;
