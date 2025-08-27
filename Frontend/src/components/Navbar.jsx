@@ -29,7 +29,7 @@ const Navbar = () => {
   ];
 
   const userLinks = [
-    { name: "Recommendations", path: "/recommendations", public: false },
+    // Recommendations moved to profile page
   ];
 
   return (

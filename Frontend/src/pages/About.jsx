@@ -332,7 +332,7 @@ const About = () => {
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
               <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
                   alt="Emily Rodriguez"
                   className="w-full h-full object-cover"
                 />

@@ -1,4 +1,4 @@
-import { User, Post, Skill, Badge } from '../models/index.js';
+import { User, Post, Skill, Badge, UserSkill } from '../models/index.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
@@ -100,18 +100,34 @@ export const updateUserProfile = async (req, res) => {
 
     // Update skills if provided
     if (skills && Array.isArray(skills)) {
-      // Remove existing skills
-      await Skill.destroy({ where: { user_id: userId } });
+      // Remove existing user skills
+      await UserSkill.destroy({ where: { user_id: userId } });
 
       // Add new skills
-      const skillPromises = skills.map(skill =>
-        Skill.create({
+      const skillPromises = skills.map(async (skill) => {
+        // First, find or create the skill in the skills table
+        let skillRecord = await Skill.findOne({ where: { name: skill.skill_name } });
+
+        if (!skillRecord) {
+          // Create new skill if it doesn't exist
+          skillRecord = await Skill.create({
+            name: skill.skill_name,
+            category: skill.skill_type || 'general', // Use skill_type as category
+            is_approved: true,
+            created_by: userId
+          });
+        }
+
+        // Create user-skill relationship
+        return UserSkill.create({
           user_id: userId,
-          skill_name: skill.skill_name,
-          skill_type: skill.skill_type, // 'learn' or 'teach'
-          proficiency_level: skill.proficiency_level
-        })
-      );
+          skill_id: skillRecord.id,
+          proficiency_level: skill.proficiency_level || 'beginner',
+          can_teach: skill.skill_type === 'teach',
+          wants_to_learn: skill.skill_type === 'learn'
+        });
+      });
+
       await Promise.all(skillPromises);
     }
 
@@ -121,7 +137,10 @@ export const updateUserProfile = async (req, res) => {
       include: [
         {
           model: Skill,
-          as: 'skills'
+          as: 'skills',
+          through: {
+            attributes: ['proficiency_level', 'can_teach', 'wants_to_learn', 'years_of_experience']
+          }
         },
         {
           model: Badge,
