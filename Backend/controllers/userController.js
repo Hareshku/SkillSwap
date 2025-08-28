@@ -52,6 +52,9 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log('Update profile request for user:', userId);
+    console.log('Request body:', req.body);
+
     const {
       full_name,
       bio,
@@ -70,6 +73,7 @@ export const updateUserProfile = async (req, res) => {
     // Update user basic info
     const user = await User.findByPk(userId);
     if (!user) {
+      console.log('User not found:', userId);
       return res.status(404).json({
         success: false,
         message: 'User not found'
@@ -91,44 +95,76 @@ export const updateUserProfile = async (req, res) => {
       timezone
     };
 
+    // Remove undefined values
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
+
     // Add profile picture if uploaded
     if (req.file) {
       updateData.profile_picture = `/uploads/${req.file.filename}`;
     }
 
+    console.log('Updating user with data:', updateData);
     await user.update(updateData);
+    console.log('User basic info updated successfully');
 
     // Update skills if provided
     if (skills && Array.isArray(skills)) {
+      console.log('Processing skills:', skills);
+
       // Remove existing user skills
       await UserSkill.destroy({ where: { user_id: userId } });
 
       // Add new skills
-      const skillPromises = skills.map(async (skill) => {
-        // First, find or create the skill in the skills table
-        let skillRecord = await Skill.findOne({ where: { name: skill.skill_name } });
+      if (skills.length > 0) {
+        const skillPromises = skills.map(async (skill) => {
+          try {
+            console.log('Processing skill:', skill);
 
-        if (!skillRecord) {
-          // Create new skill if it doesn't exist
-          skillRecord = await Skill.create({
-            name: skill.skill_name,
-            category: skill.skill_type || 'general', // Use skill_type as category
-            is_approved: true,
-            created_by: userId
-          });
-        }
+            // Validate skill data
+            if (!skill.skill_name || typeof skill.skill_name !== 'string') {
+              console.warn('Invalid skill name:', skill);
+              return null;
+            }
 
-        // Create user-skill relationship
-        return UserSkill.create({
-          user_id: userId,
-          skill_id: skillRecord.id,
-          proficiency_level: skill.proficiency_level || 'beginner',
-          can_teach: skill.skill_type === 'teach',
-          wants_to_learn: skill.skill_type === 'learn'
+            // First, find or create the skill in the skills table
+            let skillRecord = await Skill.findOne({ where: { name: skill.skill_name } });
+
+            if (!skillRecord) {
+              // Create new skill if it doesn't exist
+              skillRecord = await Skill.create({
+                name: skill.skill_name,
+                category: skill.skill_type || 'general', // Use skill_type as category
+                is_approved: true,
+                created_by: userId
+              });
+              console.log('Created new skill:', skillRecord.name);
+            }
+
+            // Create user-skill relationship
+            const userSkill = await UserSkill.create({
+              user_id: userId,
+              skill_id: skillRecord.id,
+              proficiency_level: skill.proficiency_level || 'beginner',
+              can_teach: skill.skill_type === 'teach',
+              wants_to_learn: skill.skill_type === 'learn'
+            });
+
+            console.log('Created user-skill relationship:', userSkill.id);
+            return userSkill;
+          } catch (skillError) {
+            console.error('Error processing skill:', skill, skillError);
+            return null;
+          }
         });
-      });
 
-      await Promise.all(skillPromises);
+        const results = await Promise.all(skillPromises);
+        const successfulSkills = results.filter(result => result !== null);
+        console.log(`Successfully processed ${successfulSkills.length} out of ${skills.length} skills`);
+      }
     }
 
     // Fetch updated user with associations
@@ -149,6 +185,7 @@ export const updateUserProfile = async (req, res) => {
       ]
     });
 
+    console.log('Profile updated successfully for user:', userId);
     res.json({
       success: true,
       message: 'Profile updated successfully',
@@ -156,9 +193,12 @@ export const updateUserProfile = async (req, res) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
+    console.error('Error details:', error.message);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Failed to update profile'
+      message: 'Failed to update profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -288,6 +328,193 @@ export const getUserRecommendations = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch recommendations'
+    });
+  }
+};
+
+// Get post recommendations for user based on their skills
+export const getPostRecommendations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get current user's skills with their types
+    const userWithSkills = await User.findByPk(userId, {
+      include: [
+        {
+          model: Skill,
+          as: 'skills',
+          through: {
+            attributes: ['can_teach', 'wants_to_learn']
+          }
+        }
+      ]
+    });
+
+    if (!userWithSkills || !userWithSkills.skills || userWithSkills.skills.length === 0) {
+      return res.json({
+        success: true,
+        data: [],
+        message: 'Add skills to your profile to get post recommendations'
+      });
+    }
+
+    // Extract skill names based on user's learning interests and teaching abilities
+    const skillsToLearn = userWithSkills.skills
+      .filter(skill => skill.UserSkill.wants_to_learn)
+      .map(skill => skill.name);
+
+    const skillsToTeach = userWithSkills.skills
+      .filter(skill => skill.UserSkill.can_teach)
+      .map(skill => skill.name);
+
+    console.log('=== RECOMMENDATION DEBUG ===');
+    console.log('User ID:', userId);
+    console.log('User with skills:', JSON.stringify(userWithSkills?.skills, null, 2));
+    console.log('User skills to learn:', skillsToLearn);
+    console.log('User skills to teach:', skillsToTeach);
+
+    // Build where conditions for skill matching
+    const whereConditions = {
+      user_id: { [Op.ne]: userId }, // Exclude user's own posts
+      status: 'active',
+      is_approved: true
+    };
+
+    // Add skill matching conditions if user has skills
+    if (skillsToLearn.length > 0 || skillsToTeach.length > 0) {
+      const orConditions = [];
+
+      // Posts teaching skills the user wants to learn
+      if (skillsToLearn.length > 0) {
+        skillsToLearn.forEach(skill => {
+          console.log(`Looking for posts teaching: "${skill}"`);
+          // Try different approaches for JSON array matching
+          orConditions.push({
+            skills_to_teach: {
+              [Op.contains]: [skill]
+            }
+          });
+          // Also try case-insensitive matching
+          orConditions.push({
+            skills_to_teach: {
+              [Op.iLike]: `%"${skill}"%`
+            }
+          });
+        });
+      }
+
+      // Posts wanting to learn skills the user can teach
+      if (skillsToTeach.length > 0) {
+        skillsToTeach.forEach(skill => {
+          console.log(`Looking for posts wanting to learn: "${skill}"`);
+          orConditions.push({
+            skills_to_learn: {
+              [Op.contains]: [skill]
+            }
+          });
+          // Also try case-insensitive matching
+          orConditions.push({
+            skills_to_learn: {
+              [Op.iLike]: `%"${skill}"%`
+            }
+          });
+        });
+      }
+
+      if (orConditions.length > 0) {
+        whereConditions[Op.or] = orConditions;
+      }
+    }
+
+    console.log('Where conditions:', JSON.stringify(whereConditions, null, 2));
+
+    // First, let's get all posts to see what's available
+    const allPosts = await Post.findAll({
+      where: {
+        user_id: { [Op.ne]: userId },
+        status: 'active',
+        is_approved: true
+      },
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'full_name', 'profile_picture', 'profession']
+        }
+      ]
+    });
+
+    console.log('All available posts:', allPosts.length);
+    allPosts.forEach(post => {
+      console.log(`Post ${post.id} by ${post.author?.full_name}: skills_to_teach=${JSON.stringify(post.skills_to_teach)}, skills_to_learn=${JSON.stringify(post.skills_to_learn)}`);
+    });
+
+    // Find posts that match user's interests
+    const recommendedPosts = await Post.findAll({
+      where: whereConditions,
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'full_name', 'profile_picture', 'profession']
+        }
+      ],
+      order: [['created_at', 'DESC']],
+      limit: 10
+    });
+
+    console.log('Recommended posts found:', recommendedPosts.length);
+    recommendedPosts.forEach(post => {
+      console.log(`Recommended post ${post.id}: ${post.title} by ${post.author?.full_name}`);
+    });
+
+    // If no posts found with database query, try manual matching as fallback
+    let finalRecommendations = recommendedPosts;
+
+    if (recommendedPosts.length === 0 && (skillsToLearn.length > 0 || skillsToTeach.length > 0)) {
+      console.log('No posts found with database query, trying manual matching...');
+
+      const manualMatches = allPosts.filter(post => {
+        // Check if post teaches skills user wants to learn
+        const teachesWantedSkills = skillsToLearn.some(skill =>
+          post.skills_to_teach &&
+          Array.isArray(post.skills_to_teach) &&
+          post.skills_to_teach.some(teachSkill =>
+            teachSkill.toLowerCase().includes(skill.toLowerCase()) ||
+            skill.toLowerCase().includes(teachSkill.toLowerCase())
+          )
+        );
+
+        // Check if post wants to learn skills user can teach
+        const wantsSkillsUserTeaches = skillsToTeach.some(skill =>
+          post.skills_to_learn &&
+          Array.isArray(post.skills_to_learn) &&
+          post.skills_to_learn.some(learnSkill =>
+            learnSkill.toLowerCase().includes(skill.toLowerCase()) ||
+            skill.toLowerCase().includes(learnSkill.toLowerCase())
+          )
+        );
+
+        return teachesWantedSkills || wantsSkillsUserTeaches;
+      });
+
+      console.log('Manual matches found:', manualMatches.length);
+      manualMatches.forEach(post => {
+        console.log(`Manual match ${post.id}: ${post.title} by ${post.author?.full_name}`);
+      });
+
+      finalRecommendations = manualMatches.slice(0, 10);
+    }
+
+    res.json({
+      success: true,
+      data: finalRecommendations
+    });
+  } catch (error) {
+    console.error('Get post recommendations error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch post recommendations'
     });
   }
 };

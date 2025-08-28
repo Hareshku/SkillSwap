@@ -6,7 +6,8 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Discover from './pages/Discover';
 import Contact from './pages/Contact';
-import Profile from './pages/Profile';
+import OwnProfile from './pages/OwnProfile';
+import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import CommunityRegistration from './pages/CommunityRegistration';
@@ -47,12 +48,12 @@ function App() {
               } />
               <Route path="/profile" element={
                 <ProtectedRoute>
-                  <Profile />
+                  <OwnProfile />
                 </ProtectedRoute>
               } />
               <Route path="/profile/:userId" element={
                 <ProtectedRoute>
-                  <Profile />
+                  <UserProfile />
                 </ProtectedRoute>
               } />
               <Route path="/dashboard" element={
