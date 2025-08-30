@@ -9,6 +9,8 @@ import {
   loginAdmin,
   getProfile,
   changePassword,
+  forgotPassword,
+  resetPassword,
   logout,
   completeProfile
 } from '../controllers/authController.js';
@@ -16,6 +18,8 @@ import {
   validateUserRegistration,
   validateUserLogin,
   validatePasswordChange,
+  validateForgotPassword,
+  validateResetPassword,
   validateProfileCompletion
 } from '../middleware/validation.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -63,6 +67,8 @@ router.post('/login/admin', validateUserLogin, loginAdmin);
 router.get('/profile', authenticateToken, getProfile);
 router.put('/complete-profile', authenticateToken, upload.single('profile_picture'), completeProfile);
 router.put('/change-password', authenticateToken, validatePasswordChange, changePassword);
+router.post('/forgot-password', validateForgotPassword, forgotPassword);
+router.post('/reset-password', validateResetPassword, resetPassword);
 router.post('/logout', authenticateToken, logout);
 
 export default router;

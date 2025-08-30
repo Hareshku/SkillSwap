@@ -75,7 +75,7 @@ const Meeting = sequelize.define('Meeting', {
     comment: 'Physical location for offline meetings'
   },
   status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed', 'no_show'),
+    type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed', 'no_show', 'in_progress', 'declined'),
     defaultValue: 'pending'
   },
   google_calendar_event_id: {
@@ -119,6 +119,31 @@ const Meeting = sequelize.define('Meeting', {
   cancelled_at: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  confirmed_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'When the meeting was confirmed by participant'
+  },
+  started_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'When the meeting was started (someone joined the link)'
+  },
+  completed_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'When the meeting was marked as completed'
+  },
+  declined_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'When the meeting was declined by participant'
+  },
+  decline_reason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'Reason for declining the meeting'
   }
 }, {
   tableName: 'meetings',

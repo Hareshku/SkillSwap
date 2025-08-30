@@ -11,12 +11,12 @@ const AdminDashboard = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Pagination states
   const [usersPagination, setUsersPagination] = useState({ page: 1, limit: 10 });
   const [postsPagination, setPostsPagination] = useState({ page: 1, limit: 10 });
   const [reportsPagination, setReportsPagination] = useState({ page: 1, limit: 10 });
-  
+
   // Filter states
   const [userFilters, setUserFilters] = useState({ search: '', status: '', role: '' });
   const [postFilters, setPostFilters] = useState({ search: '', status: '' });
@@ -239,26 +239,6 @@ const AdminDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="mt-2 text-gray-600">Manage users, posts, and reports</p>
           </div>
-          <div className="flex items-center space-x-4">
-            {/* Admin Info */}
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{user?.full_name}</p>
-              <p className="text-sm text-gray-500">{user?.email}</p>
-              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                Admin
-              </span>
-            </div>
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Logout
-            </button>
-          </div>
         </div>
 
         {error && (
@@ -279,11 +259,10 @@ const AdminDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 <span className="mr-2">{tab.icon}</span>
                 {tab.name}
@@ -451,20 +430,18 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.role === 'admin'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-gray-100 text-gray-800'
+                            }`}>
                             {user.role}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.is_active
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.is_active
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}>
                             {user.is_active ? 'Active' : 'Blocked'}
                           </span>
                         </td>
@@ -481,11 +458,10 @@ const AdminDashboard = () => {
                           {user.role !== 'admin' && (
                             <button
                               onClick={() => handleUserStatusToggle(user.id, user.is_active ? 'block' : 'unblock')}
-                              className={`mr-2 px-3 py-1 rounded text-xs font-medium ${
-                                user.is_active
-                                  ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                                  : 'bg-green-100 text-green-800 hover:bg-green-200'
-                              }`}
+                              className={`mr-2 px-3 py-1 rounded text-xs font-medium ${user.is_active
+                                ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                                : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                }`}
                             >
                               {user.is_active ? 'Block' : 'Unblock'}
                             </button>
@@ -618,22 +594,20 @@ const AdminDashboard = () => {
                           <div className="text-sm text-gray-500">{post.author?.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            post.removed_by
-                              ? 'bg-red-100 text-red-800'
-                              : post.status === 'active'
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.removed_by
+                            ? 'bg-red-100 text-red-800'
+                            : post.status === 'active'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-800'
-                          }`}>
+                            }`}>
                             {post.removed_by ? 'removed' : post.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            post.post_type === 'teach'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-purple-100 text-purple-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.post_type === 'teach'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-purple-100 text-purple-800'
+                            }`}>
                             {post.post_type}
                           </span>
                         </td>
@@ -814,15 +788,14 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            report.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : report.status === 'resolved'
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${report.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : report.status === 'resolved'
                               ? 'bg-green-100 text-green-800'
                               : report.status === 'rejected'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}>
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-blue-100 text-blue-800'
+                            }`}>
                             {report.status.replace('_', ' ')}
                           </span>
                         </td>

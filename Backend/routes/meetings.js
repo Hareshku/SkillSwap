@@ -10,6 +10,7 @@ import {
   cancelMeeting,
   acceptMeeting,
   declineMeeting,
+  joinMeeting,
   completeMeeting
 } from '../controllers/meetingController.js';
 
@@ -208,6 +209,14 @@ router.put('/:meetingId/decline',
   declineMeetingValidation,
   validateRequest,
   declineMeeting
+);
+
+// Join meeting via link (automatically starts the meeting)
+router.put('/:meetingId/join',
+  authenticateToken,
+  meetingIdValidation,
+  validateRequest,
+  joinMeeting
 );
 
 // Mark meeting as completed

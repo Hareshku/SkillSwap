@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import MessageModal from '../components/MessageModal';
 import ScheduleModal from '../components/ScheduleModal';
 import ReportModal from '../components/ReportModal';
+import ReviewModal from '../components/ReviewModal';
 import Rating from '../components/Rating';
 import axios from 'axios';
 
@@ -122,43 +123,58 @@ const UserProfile = () => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState(null);
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [userRating, setUserRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+  const [reviews, setReviews] = useState([]);
+
+  // Function to fetch user profile data
+  const fetchUserProfile = async () => {
+    if (user && token && userId) {
+      try {
+        const response = await axios.get(`/api/users/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setProfileData(response.data.data);
+        setSkills(response.data.data.skills || []);
+
+        // Fetch user rating
+        try {
+          const ratingResponse = await axios.get(`/api/reviews/user/${userId}/rating`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setUserRating(ratingResponse.data.data.averageRating || 0);
+          setTotalReviews(ratingResponse.data.data.totalReviews || 0);
+        } catch (ratingError) {
+          console.error('Error fetching user rating:', ratingError);
+          setUserRating(0);
+          setTotalReviews(0);
+        }
+
+        // Fetch user reviews
+        try {
+          const reviewsResponse = await axios.get(`/api/reviews/user/${userId}?limit=5`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setReviews(reviewsResponse.data.data.reviews || []);
+        } catch (reviewsError) {
+          console.error('Error fetching user reviews:', reviewsError);
+          setReviews([]);
+        }
+
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        alert('Failed to load user profile. User may not exist or profile is private.');
+        navigate('/discover');
+      }
+    }
+  };
 
   // Fetch user profile data
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (user && token && userId) {
-        try {
-          const response = await axios.get(`/api/users/profile/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setProfileData(response.data.data);
-          setSkills(response.data.data.skills || []);
-
-          // Fetch user rating
-          try {
-            const ratingResponse = await axios.get(`/api/reviews/user/${userId}/rating`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserRating(ratingResponse.data.data.averageRating || 0);
-            setTotalReviews(ratingResponse.data.data.totalReviews || 0);
-          } catch (ratingError) {
-            console.error('Error fetching user rating:', ratingError);
-            setUserRating(0);
-            setTotalReviews(0);
-          }
-
-        } catch (error) {
-          console.error('Error fetching profile:', error);
-          alert('Failed to load user profile. User may not exist or profile is private.');
-          navigate('/discover');
-        }
-      }
-    };
 
     const fetchConnectionStatus = async () => {
       if (user && token && userId) {
@@ -173,7 +189,7 @@ const UserProfile = () => {
       }
     };
 
-    fetchProfile();
+    fetchUserProfile();
     fetchConnectionStatus();
   }, [user, token, userId, navigate]);
 
@@ -255,7 +271,7 @@ const UserProfile = () => {
 
                 {/* Rating */}
                 <div className="flex items-center space-x-2">
-                  <Rating value={userRating} readOnly size="lg" />
+                  <Rating rating={userRating} size="lg" />
                   <span className="text-white opacity-90">
                     {userRating.toFixed(1)} ({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})
                   </span>
@@ -369,9 +385,24 @@ const UserProfile = () => {
               <span>Schedule</span>
             </button>
 
+            {/* Review Button */}
+            <button
+              onClick={() => setShowReviewModal(true)}
+              className="bg-yellow-600 text-white px-8 py-3 rounded-lg hover:bg-yellow-700 transition-colors flex items-center space-x-2 font-semibold text-lg min-w-[140px] justify-center"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+              <span>Review</span>
+            </button>
+
             {/* Report Button */}
             <button
-              onClick={() => setShowReportModal(true)}
+              onClick={() => {
+                console.log('Opening report modal with userId:', userId);
+                console.log('Profile data:', profileData);
+                setShowReportModal(true);
+              }}
               className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 font-semibold text-lg min-w-[140px] justify-center"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -430,6 +461,63 @@ const UserProfile = () => {
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Recent Posts</h2>
                 <UserPosts userId={userId} />
               </div>
+
+              {/* Reviews and Rating Section */}
+              <div className="mb-8">
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-6">Reviews & Rating</h2>
+
+                  {/* Rating Summary */}
+                  <div className="mb-6 p-4 bg-white rounded-lg border">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <Rating rating={userRating} size="lg" />
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900">{userRating.toFixed(1)}</div>
+                          <div className="text-sm text-gray-600">{totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Reviews */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Recent Reviews</h3>
+                    {reviews.length > 0 ? (
+                      <div className="space-y-4">
+                        {reviews.map((review) => (
+                          <div key={review.id} className="bg-white p-4 rounded-lg border">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
+                                  {review.reviewer?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-gray-900">{review.reviewer?.full_name || 'Anonymous'}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {new Date(review.created_at).toLocaleDateString()}
+                                  </div>
+                                </div>
+                              </div>
+                              <Rating rating={review.rating} size="sm" />
+                            </div>
+                            {review.feedback && (
+                              <p className="text-gray-700 text-sm leading-relaxed">{review.feedback}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-white p-6 rounded-lg border text-center">
+                        <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                        <p className="text-gray-600 text-sm">No reviews yet</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Column - Profile Information */}
@@ -469,18 +557,6 @@ const UserProfile = () => {
                       <span className="font-medium text-gray-600">Degree Level:</span>
                       <p className="text-gray-900 capitalize">{profileData?.degree_level?.replace('_', ' ') || 'Not specified'}</p>
                     </div>
-                  </div>
-                </div>
-
-                {/* Rating Summary */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-3">Rating Summary</h3>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-gray-800 mb-2">{userRating.toFixed(1)}</div>
-                    <Rating value={userRating} readOnly size="lg" />
-                    <p className="text-gray-600 mt-2">
-                      Based on {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -525,8 +601,10 @@ const UserProfile = () => {
         <MessageModal
           isOpen={showMessageModal}
           onClose={() => setShowMessageModal(false)}
-          recipientId={userId}
-          recipientName={profileData?.full_name}
+          recipientUser={{
+            id: userId,
+            full_name: profileData?.full_name
+          }}
         />
       )}
 
@@ -534,17 +612,35 @@ const UserProfile = () => {
         <ScheduleModal
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
-          participantId={userId}
-          participantName={profileData?.full_name}
+          participantUser={{
+            id: userId,
+            full_name: profileData?.full_name
+          }}
         />
       )}
 
-      {showReportModal && (
+      {showReportModal && userId && profileData && (
         <ReportModal
           isOpen={showReportModal}
           onClose={() => setShowReportModal(false)}
-          reportedUserId={userId}
-          reportedUserName={profileData?.full_name}
+          reportedUser={{
+            id: userId,
+            full_name: profileData?.full_name
+          }}
+        />
+      )}
+
+      {showReviewModal && (
+        <ReviewModal
+          isOpen={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          revieweeId={userId}
+          revieweeName={profileData?.full_name}
+          onReviewSubmitted={() => {
+            // Refresh user rating and reviews after review is submitted
+            fetchUserProfile();
+            setShowReviewModal(false);
+          }}
         />
       )}
     </div>

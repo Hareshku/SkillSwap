@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
@@ -10,6 +10,16 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
     description: ''
   });
   const [loading, setLoading] = useState(false);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('ReportModal - isOpen:', isOpen);
+    console.log('ReportModal - reportedUser:', reportedUser);
+    if (reportedUser) {
+      console.log('ReportModal - reportedUser.id:', reportedUser.id);
+      console.log('ReportModal - reportedUser.full_name:', reportedUser.full_name);
+    }
+  }, [isOpen, reportedUser]);
 
   const reportTypes = [
     { value: 'inappropriate_behavior', label: 'Inappropriate Behavior' },
@@ -31,10 +41,26 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
 
   const handleSubmitReport = async (e) => {
     e.preventDefault();
+
+    // Validate reportedUser exists
+    if (!reportedUser || !reportedUser.id) {
+      console.error('ReportModal: reportedUser is undefined or missing id:', reportedUser);
+      alert('Error: Unable to identify the user to report. Please try again.');
+      return;
+    }
+
+    if (!formData.reportType || !formData.reason.trim()) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    console.log('Submitting report for user:', reportedUser);
+    console.log('Report data:', formData);
+
     setLoading(true);
 
     try {
-      await axios.post('/api/reports', {
+      const response = await axios.post('/api/reports', {
         reportedUserId: reportedUser.id,
         reportType: formData.reportType,
         reason: formData.reason,
@@ -43,6 +69,7 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      console.log('Report submitted successfully:', response.data);
       alert('Report submitted successfully. Our moderation team will review it shortly.');
       setFormData({
         reportType: '',
@@ -52,7 +79,16 @@ const ReportModal = ({ isOpen, onClose, reportedUser }) => {
       onClose();
     } catch (error) {
       console.error('Error submitting report:', error);
-      alert(error.response?.data?.message || 'Failed to submit report. Please try again.');
+      console.error('Error response:', error.response?.data);
+
+      let errorMessage = 'Failed to submit report. Please try again.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Report service not found. Please contact support.';
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

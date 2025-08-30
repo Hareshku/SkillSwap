@@ -399,6 +399,97 @@ export const deleteReview = async (req, res) => {
   }
 };
 
+// Get user rating statistics
+export const getUserRating = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get all reviews for this user
+    const reviews = await Review.findAll({
+      where: {
+        reviewee_id: userId,
+        is_public: true
+      },
+      attributes: ['rating', 'communication_rating', 'knowledge_rating', 'punctuality_rating']
+    });
+
+    if (reviews.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          averageRating: 0,
+          totalReviews: 0,
+          ratingBreakdown: {
+            5: 0,
+            4: 0,
+            3: 0,
+            2: 0,
+            1: 0
+          },
+          averageCommunicationRating: 0,
+          averageKnowledgeRating: 0,
+          averagePunctualityRating: 0
+        }
+      });
+    }
+
+    // Calculate average rating
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalRating / reviews.length;
+
+    // Calculate rating breakdown
+    const ratingBreakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(review => {
+      ratingBreakdown[review.rating]++;
+    });
+
+    // Calculate other average ratings
+    const communicationRatings = reviews.filter(r => r.communication_rating).map(r => r.communication_rating);
+    const knowledgeRatings = reviews.filter(r => r.knowledge_rating).map(r => r.knowledge_rating);
+    const punctualityRatings = reviews.filter(r => r.punctuality_rating).map(r => r.punctuality_rating);
+
+    const averageCommunicationRating = communicationRatings.length > 0
+      ? communicationRatings.reduce((sum, rating) => sum + rating, 0) / communicationRatings.length
+      : 0;
+
+    const averageKnowledgeRating = knowledgeRatings.length > 0
+      ? knowledgeRatings.reduce((sum, rating) => sum + rating, 0) / knowledgeRatings.length
+      : 0;
+
+    const averagePunctualityRating = punctualityRatings.length > 0
+      ? punctualityRatings.reduce((sum, rating) => sum + rating, 0) / punctualityRatings.length
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
+        totalReviews: reviews.length,
+        ratingBreakdown,
+        averageCommunicationRating: Math.round(averageCommunicationRating * 10) / 10,
+        averageKnowledgeRating: Math.round(averageKnowledgeRating * 10) / 10,
+        averagePunctualityRating: Math.round(averagePunctualityRating * 10) / 10
+      }
+    });
+
+  } catch (error) {
+    console.error('Get user rating error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 // Check if user can review another user (based on completed meetings)
 export const canReviewUser = async (req, res) => {
   try {
@@ -461,6 +552,7 @@ export const canReviewUser = async (req, res) => {
 export default {
   createReview,
   getUserReviews,
+  getUserRating,
   getReviewsByUser,
   updateReview,
   deleteReview,

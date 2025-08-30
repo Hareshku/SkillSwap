@@ -10,6 +10,8 @@ import OwnProfile from './pages/OwnProfile';
 import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import CommunityRegistration from './pages/CommunityRegistration';
 import Dashboard from './pages/Dashboard';
 import ConnectionRequests from './pages/ConnectionRequests';
@@ -34,6 +36,8 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/community-registration" element={
                 <ProtectedRoute>
                   <CommunityRegistration />

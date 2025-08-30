@@ -73,6 +73,29 @@ const Meetings = () => {
     }
   };
 
+  // Join meeting via link (automatically updates status)
+  const joinMeeting = async (meetingId) => {
+    try {
+      const response = await axios.put(`/api/meetings/${meetingId}/join`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Refresh meetings list to show updated status
+      await fetchMeetings();
+
+      // Open the meeting link in a new tab
+      if (response.data.data?.meeting_link) {
+        window.open(response.data.data.meeting_link, '_blank');
+      }
+
+      // Trigger navbar notification refresh
+      window.dispatchEvent(new CustomEvent('meetingStatusChanged'));
+    } catch (error) {
+      console.error('Error joining meeting:', error);
+      alert(error.response?.data?.message || 'Failed to join meeting. Please try again.');
+    }
+  };
+
   // Mark meeting as completed
   const completeMeeting = async (meetingId, notes = '') => {
     try {
@@ -100,8 +123,10 @@ const Meetings = () => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-purple-100 text-purple-800';
       case 'completed': return 'bg-blue-100 text-blue-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'declined': return 'bg-orange-100 text-orange-800';
       case 'no_show': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -147,17 +172,18 @@ const Meetings = () => {
                 { key: 'all', label: 'All Meetings' },
                 { key: 'pending', label: 'Pending' },
                 { key: 'confirmed', label: 'Confirmed' },
+                { key: 'in_progress', label: 'In Progress' },
                 { key: 'completed', label: 'Completed' },
-                { key: 'cancelled', label: 'Cancelled' }
+                { key: 'cancelled', label: 'Cancelled' },
+                { key: 'declined', label: 'Declined' }
               ].map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    filter === tab.key
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${filter === tab.key
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
                 >
                   {tab.label}
                   <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
@@ -227,9 +253,12 @@ const Meetings = () => {
                           {meeting.meeting_link && (
                             <p className="text-sm text-gray-600">
                               <span className="font-medium">Link:</span>{' '}
-                              <a href={meeting.meeting_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              <button
+                                onClick={() => joinMeeting(meeting.id)}
+                                className="text-blue-600 hover:underline hover:text-blue-800 transition-colors"
+                              >
                                 Join Meeting
-                              </a>
+                              </button>
                             </p>
                           )}
                         </div>
@@ -272,7 +301,7 @@ const Meetings = () => {
                         </>
                       )}
 
-                      {meeting.status === 'confirmed' && (
+                      {(meeting.status === 'confirmed' || meeting.status === 'in_progress') && (
                         <>
                           <button
                             onClick={() => {
@@ -283,15 +312,17 @@ const Meetings = () => {
                           >
                             Mark Complete
                           </button>
-                          <button
-                            onClick={() => {
-                              const reason = prompt('Reason for cancelling (optional):');
-                              cancelMeeting(meeting.id, reason || '');
-                            }}
-                            className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors"
-                          >
-                            Cancel
-                          </button>
+                          {meeting.status !== 'in_progress' && (
+                            <button
+                              onClick={() => {
+                                const reason = prompt('Reason for cancelling (optional):');
+                                cancelMeeting(meeting.id, reason || '');
+                              }}
+                              className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          )}
                         </>
                       )}
 

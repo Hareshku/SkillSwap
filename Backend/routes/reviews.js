@@ -5,6 +5,7 @@ import { body, param, query } from 'express-validator';
 import {
   createReview,
   getUserReviews,
+  getUserRating,
   getReviewsByUser,
   updateReview,
   deleteReview,
@@ -127,6 +128,13 @@ router.get('/user/:userId',
   paginationValidation,
   validateRequest,
   getUserReviews
+);
+
+// Get rating statistics for a specific user (public)
+router.get('/user/:userId/rating',
+  userIdValidation,
+  validateRequest,
+  getUserRating
 );
 
 // Get reviews given by current user

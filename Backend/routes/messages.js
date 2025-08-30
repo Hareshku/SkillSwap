@@ -81,8 +81,6 @@ const searchValidation = [
 // Send a message
 router.post('/',
   authenticateToken,
-  sendMessageValidation,
-  validateRequest,
   sendMessage
 );
 

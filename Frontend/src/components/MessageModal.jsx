@@ -11,9 +11,12 @@ const MessageModal = ({ isOpen, onClose, recipientUser }) => {
     e.preventDefault();
     if (!message.trim()) return;
 
+    console.log('Sending message to:', recipientUser);
+    console.log('Message content:', message.trim());
+
     setLoading(true);
     try {
-      await axios.post('/api/messages', {
+      const response = await axios.post('/api/messages', {
         receiverId: recipientUser.id,
         content: message.trim(),
         messageType: 'text'
@@ -21,12 +24,25 @@ const MessageModal = ({ isOpen, onClose, recipientUser }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      console.log('Message sent successfully:', response.data);
       alert('Message sent successfully!');
       setMessage('');
       onClose();
     } catch (error) {
       console.error('Error sending message:', error);
-      alert(error.response?.data?.message || 'Failed to send message. Please try again.');
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+
+      let errorMessage = 'Failed to send message. Please try again.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Message service not found. Please contact support.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'You must be connected to send messages. Please send a connection request first.';
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

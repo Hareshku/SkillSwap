@@ -254,12 +254,39 @@ export const validatePagination = [
   handleValidationErrors
 ];
 
+// Forgot password validation
+export const validateForgotPassword = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+
+  handleValidationErrors
+];
+
+// Reset password validation
+export const validateResetPassword = [
+  body('token')
+    .notEmpty()
+    .withMessage('Reset token is required'),
+
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number'),
+
+  handleValidationErrors
+];
+
 export default {
   handleValidationErrors,
   validateUserRegistration,
   validateUserLogin,
   validateProfileUpdate,
   validatePasswordChange,
+  validateForgotPassword,
+  validateResetPassword,
   validatePostCreation,
   validateId,
   validatePagination

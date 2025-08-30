@@ -5,8 +5,17 @@ import { Op } from 'sequelize';
 // Send a message
 export const sendMessage = async (req, res) => {
   try {
+    console.log('=== SEND MESSAGE DEBUG ===');
+    console.log('Request body:', req.body);
+    console.log('User from auth:', req.user);
+    console.log('User ID from auth:', req.userId);
+
     const senderId = req.userId;
     const { receiverId, content, messageType = 'text' } = req.body;
+
+    console.log('Sender ID:', senderId);
+    console.log('Receiver ID:', receiverId);
+    console.log('Content:', content);
 
     // Check if receiver exists
     const receiver = await User.findByPk(receiverId);

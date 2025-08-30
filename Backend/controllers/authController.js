@@ -370,10 +370,105 @@ export const logout = async (req, res) => {
   }
 };
 
+// Forgot password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      return res.status(200).json({
+        success: true,
+        message: 'If an account with that email exists, a password reset link has been sent.'
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    // Save reset token to user
+    await user.update({
+      reset_password_token: resetToken,
+      reset_password_expires: resetTokenExpiry
+    });
+
+    // In a real application, you would send an email here
+    // For now, we'll just log the token (remove this in production)
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+    console.log(`Reset link: http://localhost:3000/reset-password?token=${resetToken}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'If an account with that email exists, a password reset link has been sent.',
+      // Remove this in production - only for testing
+      resetToken: resetToken
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Reset password
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Find user with valid reset token
+    const user = await User.findOne({
+      where: {
+        reset_password_token: token,
+        reset_password_expires: {
+          [Op.gt]: new Date()
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired reset token'
+      });
+    }
+
+    // Update password and clear reset token
+    await user.update({
+      password: password, // This will be hashed by the beforeUpdate hook
+      reset_password_token: null,
+      reset_password_expires: null
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully'
+    });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 export default {
   register,
   login,
+  loginUser,
+  loginAdmin,
   getProfile,
   changePassword,
-  logout
+  forgotPassword,
+  resetPassword,
+  logout,
+  completeProfile
 };

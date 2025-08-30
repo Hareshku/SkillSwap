@@ -386,6 +386,95 @@ export const declineMeeting = async (req, res) => {
   }
 };
 
+// Join meeting via link (automatically starts the meeting)
+export const joinMeeting = async (req, res) => {
+  try {
+    const { meetingId } = req.params;
+    const userId = req.userId;
+
+    const meeting = await Meeting.findOne({
+      where: {
+        id: meetingId,
+        [Op.or]: [
+          { organizer_id: userId },
+          { participant_id: userId }
+        ]
+      },
+      include: [
+        {
+          model: User,
+          as: 'organizer',
+          attributes: ['id', 'full_name', 'email', 'profile_picture']
+        },
+        {
+          model: User,
+          as: 'participant',
+          attributes: ['id', 'full_name', 'email', 'profile_picture']
+        }
+      ]
+    });
+
+    if (!meeting) {
+      return res.status(404).json({
+        success: false,
+        message: 'Meeting not found or you do not have access to this meeting'
+      });
+    }
+
+    // Check if meeting has a link
+    if (!meeting.meeting_link) {
+      return res.status(400).json({
+        success: false,
+        message: 'This meeting does not have a meeting link'
+      });
+    }
+
+    // Update meeting status based on current status
+    let newStatus = meeting.status;
+    let updateData = {};
+
+    if (meeting.status === 'pending') {
+      // If pending, mark as confirmed and in progress
+      newStatus = 'in_progress';
+      updateData = {
+        status: 'in_progress',
+        confirmed_at: new Date(),
+        started_at: new Date()
+      };
+    } else if (meeting.status === 'confirmed') {
+      // If confirmed, mark as in progress
+      newStatus = 'in_progress';
+      updateData = {
+        status: 'in_progress',
+        started_at: new Date()
+      };
+    }
+
+    // Update the meeting if status changed
+    if (Object.keys(updateData).length > 0) {
+      await meeting.update(updateData);
+    }
+
+    res.json({
+      success: true,
+      message: 'Joining meeting successfully',
+      data: {
+        meeting: {
+          ...meeting.toJSON(),
+          status: newStatus
+        },
+        meeting_link: meeting.meeting_link
+      }
+    });
+  } catch (error) {
+    console.error('Join meeting error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to join meeting'
+    });
+  }
+};
+
 // Mark meeting as completed
 export const completeMeeting = async (req, res) => {
   try {
@@ -400,7 +489,7 @@ export const completeMeeting = async (req, res) => {
           { organizer_id: userId },
           { participant_id: userId }
         ],
-        status: 'confirmed'
+        status: ['confirmed', 'in_progress']
       }
     });
 
@@ -413,7 +502,8 @@ export const completeMeeting = async (req, res) => {
 
     await meeting.update({
       status: 'completed',
-      notes: notes
+      notes: notes,
+      completed_at: new Date()
     });
 
     res.json({
