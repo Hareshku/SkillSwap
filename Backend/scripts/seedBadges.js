@@ -180,14 +180,14 @@ const seedBadges = async () => {
         where: { name: badgeData.name },
         defaults: badgeData
       });
-      
+
       if (created) {
         console.log(`✅ Created badge: ${badge.name}`);
       } else {
         console.log(`⚠️  Badge already exists: ${badge.name}`);
       }
     }
-    
+
     console.log('🎉 Badge seeding completed!');
   } catch (error) {
     console.error('❌ Error seeding badges:', error);

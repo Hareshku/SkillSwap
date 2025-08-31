@@ -36,11 +36,9 @@ const AdminDashboard = () => {
   // Fetch dashboard statistics
   const fetchStats = async () => {
     try {
-      console.log('Fetching stats with token:', token ? 'Token present' : 'No token');
       const response = await axios.get('/api/admin/dashboard/stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Stats response:', response.data);
       setStats(response.data.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -51,7 +49,7 @@ const AdminDashboard = () => {
   // Fetch users with pagination and filters
   const fetchUsers = async (page = 1) => {
     try {
-      console.log('Fetching users for page:', page);
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: usersPagination.limit.toString()
@@ -66,7 +64,6 @@ const AdminDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Users response:', response.data);
       setUsers(response.data.data.users);
       setUsersPagination(prev => ({ ...prev, ...response.data.data.pagination }));
     } catch (error) {
@@ -78,7 +75,6 @@ const AdminDashboard = () => {
   // Fetch posts with pagination and filters
   const fetchPosts = async (page = 1) => {
     try {
-      console.log('Fetching posts for page:', page);
       const params = new URLSearchParams({
         page: page.toString(),
         limit: postsPagination.limit.toString()
@@ -92,7 +88,6 @@ const AdminDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Posts response:', response.data);
       setPosts(response.data.data.posts);
       setPostsPagination(prev => ({ ...prev, ...response.data.data.pagination }));
     } catch (error) {
@@ -104,7 +99,6 @@ const AdminDashboard = () => {
   // Fetch reports with pagination and filters
   const fetchReports = async (page = 1) => {
     try {
-      console.log('Fetching reports for page:', page);
       const params = new URLSearchParams({
         page: page.toString(),
         limit: reportsPagination.limit.toString()
@@ -118,7 +112,6 @@ const AdminDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Reports response:', response.data);
       setReports(response.data.data.reports || []);
       setReportsPagination(prev => ({ ...prev, ...response.data.data.pagination }));
     } catch (error) {
@@ -169,8 +162,15 @@ const AdminDashboard = () => {
   // Handle post moderation
   const handlePostModeration = async (postId, action) => {
     try {
-      const reason = action === 'remove' ? prompt('Enter reason for removal:') : '';
-      if (action === 'remove' && !reason) return;
+      let reason = '';
+
+      if (action === 'remove') {
+        reason = prompt('Enter reason for removal:');
+        if (!reason) return;
+      } else if (action === 'approve') {
+        const confirmApprove = confirm('Are you sure you want to approve this post?');
+        if (!confirmApprove) return;
+      }
 
       await axios.put(`/api/admin/posts/${postId}/moderate`, {
         action,
@@ -181,9 +181,12 @@ const AdminDashboard = () => {
 
       fetchPosts(postsPagination.page);
       fetchStats(); // Refresh stats
+
+      // Show success message
+      alert(`Post ${action}d successfully!`);
     } catch (error) {
       console.error('Error moderating post:', error);
-      alert('Failed to moderate post');
+      alert(`Failed to ${action} post`);
     }
   };
 
@@ -594,14 +597,22 @@ const AdminDashboard = () => {
                           <div className="text-sm text-gray-500">{post.author?.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.removed_by
-                            ? 'bg-red-100 text-red-800'
-                            : post.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                            }`}>
-                            {post.removed_by ? 'removed' : post.status}
-                          </span>
+                          <div className="flex flex-col space-y-1">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.removed_by
+                              ? 'bg-red-100 text-red-800'
+                              : post.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                              }`}>
+                              {post.removed_by ? 'removed' : post.status}
+                            </span>
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.is_approved
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                              {post.is_approved ? 'approved' : 'pending approval'}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${post.post_type === 'teach'
@@ -615,21 +626,33 @@ const AdminDashboard = () => {
                           {new Date(post.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          {!post.removed_by ? (
-                            <button
-                              onClick={() => handlePostModeration(post.id, 'remove')}
-                              className="bg-red-100 text-red-800 hover:bg-red-200 px-3 py-1 rounded text-xs font-medium mr-2"
-                            >
-                              Remove
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handlePostModeration(post.id, 'approve')}
-                              className="bg-green-100 text-green-800 hover:bg-green-200 px-3 py-1 rounded text-xs font-medium mr-2"
-                            >
-                              Restore
-                            </button>
-                          )}
+                          <div className="flex flex-col space-y-1">
+                            {!post.removed_by ? (
+                              <>
+                                {!post.is_approved && (
+                                  <button
+                                    onClick={() => handlePostModeration(post.id, 'approve')}
+                                    className="bg-green-100 text-green-800 hover:bg-green-200 px-3 py-1 rounded text-xs font-medium"
+                                  >
+                                    Approve
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handlePostModeration(post.id, 'remove')}
+                                  className="bg-red-100 text-red-800 hover:bg-red-200 px-3 py-1 rounded text-xs font-medium"
+                                >
+                                  Remove
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => handlePostModeration(post.id, 'approve')}
+                                className="bg-green-100 text-green-800 hover:bg-green-200 px-3 py-1 rounded text-xs font-medium"
+                              >
+                                Restore
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}

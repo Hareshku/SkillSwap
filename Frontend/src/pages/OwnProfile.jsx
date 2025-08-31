@@ -13,17 +13,33 @@ const RecommendedPosts = () => {
   const [recommendedPosts, setRecommendedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Track recommendation interaction
+  const trackInteraction = async (postId, interactionType) => {
+    try {
+      await axios.post('/api/recommendations/track', {
+        postId,
+        interactionType
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      console.error('Error tracking interaction:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchRecommendedPosts = async () => {
       if (!user || !token) return;
 
       try {
-        const response = await axios.get('/api/users/post-recommendations', {
+        const response = await axios.get('/api/recommendations?limit=6', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setRecommendedPosts(response.data.data || []);
+
+        setRecommendedPosts(response.data.data?.posts || []);
       } catch (error) {
         console.error('Error fetching recommended posts:', error);
+
         setRecommendedPosts([]);
       } finally {
         setLoading(false);
@@ -54,7 +70,20 @@ const RecommendedPosts = () => {
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          <p className="text-gray-600">No recommendations yet. Add more skills to your profile to get personalized post recommendations!</p>
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              {recommendedPosts.length === 0 && loading === false ?
+                'Create your first post to get personalized recommendations! Share what you can teach and what you want to learn.' :
+                'No recommendations yet. Add skills to your posts to get personalized recommendations!'
+              }
+            </p>
+            <button
+              onClick={() => navigate('/create-post')}
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Create Your First Post →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -65,7 +94,13 @@ const RecommendedPosts = () => {
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold text-gray-800">Recommended Posts</h3>
         <button
-          onClick={() => navigate('/discover')}
+          onClick={() => {
+            // Track that user wants to see more recommendations
+            if (recommendedPosts.length > 0) {
+              trackInteraction(recommendedPosts[0].id, 'view');
+            }
+            navigate('/discover');
+          }}
           className="text-blue-600 hover:text-blue-800 font-medium"
         >
           View All →
@@ -116,11 +151,20 @@ const RecommendedPosts = () => {
                 <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
                   Teaching:
                 </span>
-                {post.skills_to_teach?.slice(0, 2).map((skill, index) => (
-                  <span key={index} className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded">
-                    {skill}
-                  </span>
-                ))}
+                {post.skills_to_teach?.slice(0, 2).map((skill, index) => {
+                  const isMatched = post.learningMatches?.includes(skill.toLowerCase());
+                  return (
+                    <span
+                      key={index}
+                      className={`text-xs px-2 py-1 rounded ${isMatched
+                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                        : 'bg-green-50 text-green-700'
+                        }`}
+                    >
+                      {skill} {isMatched && '🤝'}
+                    </span>
+                  );
+                })}
                 {post.skills_to_teach?.length > 2 && (
                   <span className="text-xs text-green-600">+{post.skills_to_teach.length - 2} more</span>
                 )}
@@ -130,15 +174,45 @@ const RecommendedPosts = () => {
                 <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded">
                   Learning:
                 </span>
-                {post.skills_to_learn?.slice(0, 2).map((skill, index) => (
-                  <span key={index} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                    {skill}
-                  </span>
-                ))}
+                {post.skills_to_learn?.slice(0, 2).map((skill, index) => {
+                  const isMatched = post.teachingMatches?.includes(skill.toLowerCase());
+                  return (
+                    <span
+                      key={index}
+                      className={`text-xs px-2 py-1 rounded ${isMatched
+                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                        : 'bg-blue-50 text-blue-700'
+                        }`}
+                    >
+                      {skill} {isMatched && '⭐'}
+                    </span>
+                  );
+                })}
                 {post.skills_to_learn?.length > 2 && (
                   <span className="text-xs text-blue-600">+{post.skills_to_learn.length - 2} more</span>
                 )}
               </div>
+
+              {/* Match Type and Score Indicator */}
+              {post.matchScore > 0 && (
+                <div className="mt-2 flex items-center space-x-2">
+                  {post.matchType === 'mutual' && (
+                    <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full border border-purple-200">
+                      🔄 Perfect Match - Mutual Exchange
+                    </span>
+                  )}
+                  {post.matchType === 'teaching' && (
+                    <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                      📚 They can teach you
+                    </span>
+                  )}
+                  {post.matchType === 'learning' && (
+                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full border border-blue-200">
+                      🎓 You can teach them
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Post Footer */}
@@ -147,7 +221,10 @@ const RecommendedPosts = () => {
                 {new Date(post.created_at).toLocaleDateString()}
               </span>
               <button
-                onClick={() => navigate('/discover')}
+                onClick={() => {
+                  trackInteraction(post.id, 'click');
+                  navigate('/discover');
+                }}
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 View Details
