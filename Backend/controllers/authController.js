@@ -62,8 +62,12 @@ export const register = async (req, res) => {
       email: user.email
     });
 
-    // Update last login
-    await user.update({ last_login: new Date() });
+    // Update last login and set online status
+    await user.update({
+      last_login: new Date(),
+      is_online: true,
+      last_seen: new Date()
+    });
 
     res.status(201).json({
       success: true,
@@ -125,8 +129,12 @@ const performLogin = async (email, password, requiredRole = null) => {
     email: user.email
   });
 
-  // Update last login
-  await user.update({ last_login: new Date() });
+  // Update last login and set online status
+  await user.update({
+    last_login: new Date(),
+    is_online: true,
+    last_seen: new Date()
+  });
 
   return {
     user: user.toJSON(),
@@ -353,8 +361,18 @@ export const completeProfile = async (req, res) => {
 // Logout (client-side token removal, but we can track it)
 export const logout = async (req, res) => {
   try {
-    // In a more sophisticated setup, you might want to blacklist the token
-    // For now, we'll just send a success response
+    // Update user's online status
+    if (req.userId) {
+      await User.findByPk(req.userId).then(user => {
+        if (user) {
+          user.update({
+            is_online: false,
+            last_seen: new Date()
+          });
+        }
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: 'Logged out successfully'

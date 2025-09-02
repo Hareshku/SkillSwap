@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { formatDate, getRelativeTime } from '../utils/dateUtils';
+import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
 
 const Messages = () => {
   const { token } = useAuth();
+  const location = useLocation();
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -119,6 +122,39 @@ const Messages = () => {
     loadData();
   }, [token]);
 
+  // Auto-open conversation if user data is passed from UserProfile
+  useEffect(() => {
+    const openConversationWith = location.state?.openConversationWith;
+    if (openConversationWith && conversations.length > 0) {
+      // Find existing conversation with this user
+      const existingConversation = conversations.find(conv =>
+        conv.partner.id === parseInt(openConversationWith.id)
+      );
+
+      if (existingConversation) {
+        // Open existing conversation
+        setSelectedConversation(existingConversation);
+        fetchMessages(existingConversation.partner.id);
+      } else {
+        // Create new conversation object for display
+        const newConversation = {
+          partner: {
+            id: parseInt(openConversationWith.id),
+            full_name: openConversationWith.full_name,
+            profile_picture: openConversationWith.profile_picture
+          },
+          lastMessage: null,
+          unreadCount: 0
+        };
+        setSelectedConversation(newConversation);
+        setMessages([]); // Start with empty messages
+      }
+
+      // Clear the state to prevent re-opening on subsequent renders
+      window.history.replaceState({}, document.title);
+    }
+  }, [conversations, location.state]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -163,7 +199,7 @@ const Messages = () => {
                         }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 relative">
                           {conversation.partner.profile_picture ? (
                             <img
                               src={conversation.partner.profile_picture}
@@ -177,6 +213,9 @@ const Messages = () => {
                               </span>
                             </div>
                           )}
+                          <div className="absolute -bottom-0.5 -right-0.5">
+                            <OnlineStatusIndicator isOnline={conversation.partner.is_online} />
+                          </div>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
@@ -210,24 +249,34 @@ const Messages = () => {
                   {/* Chat Header */}
                   <div className="p-4 border-b border-gray-200 bg-white">
                     <div className="flex items-center space-x-3">
-                      {selectedConversation.partner.profile_picture ? (
-                        <img
-                          src={selectedConversation.partner.profile_picture}
-                          alt={selectedConversation.partner.full_name}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                          <span className="text-gray-600 font-medium">
-                            {selectedConversation.partner.full_name?.charAt(0) || '?'}
-                          </span>
+                      <div className="relative">
+                        {selectedConversation.partner.profile_picture ? (
+                          <img
+                            src={selectedConversation.partner.profile_picture}
+                            alt={selectedConversation.partner.full_name}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                            <span className="text-gray-600 font-medium">
+                              {selectedConversation.partner.full_name?.charAt(0) || '?'}
+                            </span>
+                          </div>
+                        )}
+                        <div className="absolute -bottom-0.5 -right-0.5">
+                          <OnlineStatusIndicator isOnline={selectedConversation.partner.is_online} />
                         </div>
-                      )}
+                      </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">
                           {selectedConversation.partner.full_name}
                         </h3>
-                        <p className="text-sm text-gray-500">Online</p>
+                        <div className="flex items-center space-x-1">
+                          <OnlineStatusIndicator isOnline={selectedConversation.partner.is_online} />
+                          <span className="text-sm text-gray-500">
+                            {selectedConversation.partner.is_online ? 'Online' : 'Offline'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

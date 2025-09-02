@@ -15,7 +15,7 @@ export const authenticateToken = async (req, res, next) => {
     }
 
     const decoded = verifyToken(token);
-    
+
     // Get user from database to ensure they still exist and are active
     const user = await User.findByPk(decoded.userId, {
       attributes: { exclude: ['password'] }
@@ -40,6 +40,17 @@ export const authenticateToken = async (req, res, next) => {
     req.userId = user.id;
     req.userRole = user.role;
 
+    // Update user activity (set online and update last_seen)
+    try {
+      await user.update({
+        is_online: true,
+        last_seen: new Date()
+      }, { silent: true }); // silent: true prevents triggering hooks
+    } catch (activityError) {
+      // Don't fail the request if activity update fails
+      console.error('Error updating user activity:', activityError);
+    }
+
     next();
   } catch (error) {
     return res.status(401).json({
@@ -63,7 +74,7 @@ export const requireAdmin = (req, res, next) => {
 // Middleware to check if user is admin or accessing their own data
 export const requireAdminOrOwner = (req, res, next) => {
   const targetUserId = parseInt(req.params.userId || req.params.id);
-  
+
   if (req.userRole === 'admin' || req.userId === targetUserId) {
     next();
   } else {

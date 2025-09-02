@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Code, Globe, Calendar, Sparkles } from 'lucide-react';
+import OnlineStatusIndicator from './OnlineStatusIndicator';
 
 const SkillExchangeCard = ({ post, onViewProfile }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -74,7 +75,12 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
                   {getInitials(post.author?.full_name || post.author?.username)}
                 </div>
               </div>
-              <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900 animate-pulse"></div>
+              <OnlineStatusIndicator
+                isOnline={post.author?.is_online || false}
+                lastSeen={post.author?.last_seen}
+                size="sm"
+                className="-top-0.5 -right-0.5"
+              />
             </div>
 
             <div>

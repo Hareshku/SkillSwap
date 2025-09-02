@@ -193,12 +193,12 @@ export const getUserConversations = async (req, res) => {
         {
           model: User,
           as: 'sender',
-          attributes: ['id', 'full_name', 'profile_picture']
+          attributes: ['id', 'full_name', 'profile_picture', 'is_online', 'last_seen']
         },
         {
           model: User,
           as: 'receiver',
-          attributes: ['id', 'full_name', 'profile_picture']
+          attributes: ['id', 'full_name', 'profile_picture', 'is_online', 'last_seen']
         }
       ],
       order: [['created_at', 'DESC']]

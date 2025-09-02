@@ -247,6 +247,7 @@ const OwnProfile = () => {
   const [newSkill, setNewSkill] = useState({ skill_name: '', skill_type: 'learn', proficiency_level: 'beginner' });
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [userBadges, setUserBadges] = useState([]);
+  const [newBadges, setNewBadges] = useState(0);
   const [pendingMeetings, setPendingMeetings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
@@ -340,6 +341,18 @@ const OwnProfile = () => {
       } catch (error) {
         console.error('Error fetching pending requests:', error);
         setPendingRequests(0);
+      }
+
+      // Fetch new badges count (for now, show total badges count)
+      try {
+        const badgesResponse = await axios.get(`/api/badges/user/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const badges = badgesResponse.data.data?.userBadges || [];
+        setNewBadges(badges.length);
+      } catch (error) {
+        console.error('Error fetching badges count:', error);
+        setNewBadges(0);
       }
 
     } catch (error) {
@@ -493,6 +506,11 @@ const OwnProfile = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
               <span>Badges</span>
+              {newBadges > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                  {newBadges}
+                </span>
+              )}
             </button>
 
             <button

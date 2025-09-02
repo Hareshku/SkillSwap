@@ -123,7 +123,7 @@ export const getPersonalizedRecommendations = async (req, res) => {
       include: [{
         model: User,
         as: 'author',
-        attributes: ['id', 'full_name', 'username', 'profile_picture', 'location']
+        attributes: ['id', 'full_name', 'username', 'profile_picture', 'location', 'is_online', 'last_seen']
       }],
       order: [
         ['created_at', 'DESC'],

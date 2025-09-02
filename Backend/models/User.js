@@ -114,6 +114,14 @@ const User = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  is_online: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  last_seen: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   verification_token: {
     type: DataTypes.STRING(255),
     allowNull: true
@@ -210,11 +218,11 @@ const User = sequelize.define('User', {
 });
 
 // Instance methods
-User.prototype.comparePassword = async function(candidatePassword) {
+User.prototype.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-User.prototype.toJSON = function() {
+User.prototype.toJSON = function () {
   const values = Object.assign({}, this.get());
   delete values.password;
   delete values.verification_token;

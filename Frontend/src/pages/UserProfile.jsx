@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import MessageModal from '../components/MessageModal';
+
 import ScheduleModal from '../components/ScheduleModal';
 import ReportModal from '../components/ReportModal';
 import ReviewModal from '../components/ReviewModal';
 import Rating from '../components/Rating';
+import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
 import axios from 'axios';
 
 // UserPosts component
@@ -120,7 +121,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [skills, setSkills] = useState([]);
-  const [showMessageModal, setShowMessageModal] = useState(false);
+
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -223,7 +224,16 @@ const UserProfile = () => {
 
   const handleMessageClick = () => {
     if (connectionStatus?.canMessage) {
-      setShowMessageModal(true);
+      // Navigate to Messages page with user data
+      navigate('/messages', {
+        state: {
+          openConversationWith: {
+            id: userId,
+            full_name: profileData?.full_name,
+            profile_picture: profileData?.profile_picture
+          }
+        }
+      });
     } else {
       alert('You must be connected to send messages. Please send a connection request first.');
     }
@@ -249,7 +259,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               {/* Profile Picture */}
-              <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white">
+              <div className="relative w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white">
                 {profileData?.profile_picture ? (
                   <img
                     src={profileData.profile_picture}
@@ -261,6 +271,12 @@ const UserProfile = () => {
                     {profileData?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 )}
+                {/* Online Status Indicator */}
+                <OnlineStatusIndicator
+                  isOnline={profileData?.is_online || false}
+                  lastSeen={profileData?.last_seen}
+                  size="lg"
+                />
               </div>
 
               {/* Profile Info */}
@@ -597,17 +613,6 @@ const UserProfile = () => {
       )}
 
       {/* Modals */}
-      {showMessageModal && (
-        <MessageModal
-          isOpen={showMessageModal}
-          onClose={() => setShowMessageModal(false)}
-          recipientUser={{
-            id: userId,
-            full_name: profileData?.full_name
-          }}
-        />
-      )}
-
       {showScheduleModal && (
         <ScheduleModal
           isOpen={showScheduleModal}
