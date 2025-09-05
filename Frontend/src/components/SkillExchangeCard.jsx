@@ -167,19 +167,6 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-700/50">
-          <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>{post.preferred_meeting_type || 'online'}</span>
-          </div>
-
-          <div className="flex items-center space-x-1">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDate(post.createdAt || post.created_at)}</span>
-          </div>
-        </div>
       </div>
     </div>
   );
