@@ -7,7 +7,7 @@ const About = () => {
       <div
         className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-gray-800"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/background.avif')`,
         }}
       >
         <div className="text-center text-white max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@ const About = () => {
               <div className="absolute top-6 left-6 bg-white p-3 rounded-lg shadow-xl transform -rotate-12 hover:rotate-0 transition-transform duration-300">
                 <div className="w-28 h-28 bg-gradient-to-r from-orange-400 to-orange-500 rounded-md overflow-hidden mb-2 flex items-center justify-center">
                   <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    src="./images/m1.webp"
                     alt="Professional woman"
                     className="w-full h-full object-cover"
                   />
@@ -69,7 +69,7 @@ const About = () => {
               <div className="absolute top-4 right-6 bg-white p-3 rounded-lg shadow-xl transform rotate-12 hover:rotate-0 transition-transform duration-300">
                 <div className="w-28 h-28 bg-gray-300 rounded-md overflow-hidden mb-2">
                   <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    src="./images/m2.webp"
                     alt="Professional man"
                     className="w-full h-full object-cover"
                   />
@@ -78,12 +78,12 @@ const About = () => {
 
               {/* Bottom Left Polaroid - Yellow Text Card */}
               <div className="absolute bottom-6 left-4 bg-white p-3 rounded-lg shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300">
-                <div className="w-28 h-28 bg-yellow-400 rounded-md flex items-start justify-start p-2">
-                  <div className="text-black font-semibold text-sm leading-tight">
-                    Learning
-                    <br />
-                    session
-                  </div>
+                <div className="w-28 h-28 bg-gray-200 rounded-md flex items-start justify-start p-2">
+                  <img
+                    src="./images/m4.png"
+                    alt="Team collaboration"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ const About = () => {
               <div className="absolute bottom-4 right-4 bg-white p-3 rounded-lg shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300">
                 <div className="w-28 h-28 bg-gray-200 rounded-md overflow-hidden mb-2">
                   <img
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    src="./images/m3.jpg"
                     alt="Team collaboration"
                     className="w-full h-full object-cover"
                   />
@@ -100,6 +100,7 @@ const About = () => {
             </div>
 
             {/* Bottom Right Image */}
+
           </div>
         </div>
       </div>
@@ -294,17 +295,17 @@ const About = () => {
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
               <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                  alt="Sarah Johnson"
-                  className="w-full h-full object-cover"
+                  src="./images/mariam.jpg"
+                  alt="Ms. Mariam Memon"
+                  className="w-full h-full object-fill"
                 />
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-1">
-                Sarah Johnson
+                Ms. Mariam Memon
               </h3>
-              <p className="text-sm text-gray-500 mb-3">CEO & Co-Founder</p>
+              <p className="text-sm text-gray-500 mb-3">Supervisor</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Sarah is passionate about education and believes in the power of
+                Ms. Mariam Memon is passionate about education and believes in the power of
                 skill sharing to transform lives.
               </p>
             </div>
@@ -313,17 +314,17 @@ const About = () => {
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
               <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                  alt="Michael Chen"
+                  src="./images/Haresh.png"
+                  alt="Mr. Haresh Kumar"
                   className="w-full h-full object-cover"
                 />
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-1">
-                Michael Chen
+                Haresh Kumar
               </h3>
-              <p className="text-sm text-gray-500 mb-3">CTO & Co-Founder</p>
+              <p className="text-sm text-gray-500 mb-3">Full Stack developer</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Michael brings his technical expertise to build a platform that
+                Haresh brings his technical expertise to build a platform that
                 connects learners and teachers.
               </p>
             </div>
@@ -332,36 +333,36 @@ const About = () => {
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
               <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                  alt="Emily Rodriguez"
+                  src="./images/sohail.png"
+                  alt="Mr. Sohail Karmani"
                   className="w-full h-full object-cover"
                 />
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-1">
-                Emily Rodriguez
+                Sohail Karmani
               </h3>
-              <p className="text-sm text-gray-500 mb-3">Head of Community</p>
+              <p className="text-sm text-gray-500 mb-3">Java Developer</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Emily works to create a vibrant and supportive community where
+                Sohail works to create a vibrant and supportive community where
                 everyone feels welcome.
               </p>
             </div>
 
-            {/* David Kim */}
+            {/* Khushal */}
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
               <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                  alt="David Kim"
+                  src="./images/khushal.jpg"
+                  alt="Mr. Khushal"
                   className="w-full h-full object-cover"
                 />
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-1">
-                David Kim
+                Khushal
               </h3>
-              <p className="text-sm text-gray-500 mb-3">Head of Product</p>
+              <p className="text-sm text-gray-500 mb-3">Java Developer</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                David focuses on creating an intuitive and enjoyable experience
+                Khushal focuses on creating an intuitive and enjoyable experience
                 for both learners and teachers.
               </p>
             </div>

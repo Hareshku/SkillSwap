@@ -82,7 +82,7 @@ const Home = () => {
       <div
         className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-gray-800"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/background.avif')`,
         }}
       >
         <div className="text-center text-white max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
