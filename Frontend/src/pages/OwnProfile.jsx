@@ -65,7 +65,7 @@ const RecommendedPosts = () => {
   if (recommendedPosts.length === 0) {
     return (
       <div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-6">Recommended Posts</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Recommended Posts</h3>
         <div className="bg-gray-50 p-6 rounded-lg text-center">
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -91,8 +91,8 @@ const RecommendedPosts = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-800">Recommended Posts</h3>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 space-y-2 sm:space-y-0">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Recommended Posts</h3>
         <button
           onClick={() => {
             // Track that user wants to see more recommendations
@@ -101,7 +101,7 @@ const RecommendedPosts = () => {
             }
             navigate('/discover');
           }}
-          className="text-blue-600 hover:text-blue-800 font-medium"
+          className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base self-start sm:self-auto"
         >
           View All →
         </button>
@@ -435,13 +435,13 @@ const OwnProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto bg-white shadow-lg sm:mx-4 lg:mx-auto">
 
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-green-500 px-8 py-12">
-          <div className="flex items-center space-x-8">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-green-500 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 lg:space-x-8">
             {/* Profile Picture */}
-            <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white mx-auto sm:mx-0 flex-shrink-0">
               {displayData?.profile_picture ? (
                 <img
                   src={displayData.profile_picture}
@@ -449,30 +449,30 @@ const OwnProfile = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600">
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-600">
                   {displayData?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
               )}
             </div>
 
             {/* Profile Info */}
-            <div className="text-white flex-1">
-              <h1 className="text-4xl font-bold mb-2">{displayData?.full_name || 'User Name'}</h1>
-              <p className="text-xl opacity-90 mb-1">{displayData?.profession || 'student'}</p>
-              <p className="text-lg opacity-80 mb-4">{displayData?.institute || 'MUET'}</p>
+            <div className="text-white flex-1 text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">{displayData?.full_name || 'User Name'}</h1>
+              <p className="text-lg sm:text-xl opacity-90 mb-1">{displayData?.profession || 'student'}</p>
+              <p className="text-base sm:text-lg opacity-80 mb-2 sm:mb-4">{displayData?.institute || 'MUET'}</p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <button
                 onClick={() => setIsEditing(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm sm:text-base"
               >
                 Edit Profile
               </button>
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+                className="bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold text-sm sm:text-base"
               >
                 Change Password
               </button>
@@ -481,18 +481,18 @@ const OwnProfile = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white border-b border-gray-200 px-8">
-          <div className="flex space-x-8">
+        <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap gap-2 sm:gap-4 lg:gap-8 overflow-x-auto">
             <button
               onClick={() => navigate('/messages')}
-              className="flex items-center space-x-2 py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <span>Messages</span>
+              <span className="text-sm sm:text-base">Messages</span>
               {unreadMessages > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
                   {unreadMessages}
                 </span>
               )}
@@ -500,14 +500,14 @@ const OwnProfile = () => {
 
             <button
               onClick={() => navigate('/badges')}
-              className="flex items-center space-x-2 py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
-              <span>Badges</span>
+              <span className="text-sm sm:text-base">Badges</span>
               {newBadges > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
                   {newBadges}
                 </span>
               )}
@@ -515,14 +515,14 @@ const OwnProfile = () => {
 
             <button
               onClick={() => navigate('/meetings')}
-              className="flex items-center space-x-2 py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span>Meetings</span>
+              <span className="text-sm sm:text-base">Meetings</span>
               {pendingMeetings > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
                   {pendingMeetings}
                 </span>
               )}
@@ -530,14 +530,14 @@ const OwnProfile = () => {
 
             <button
               onClick={() => navigate('/connection-requests')}
-              className="flex items-center space-x-2 py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.25" />
               </svg>
-              <span>Requests</span>
+              <span className="text-sm sm:text-base">Requests</span>
               {pendingRequests > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
                   {pendingRequests}
                 </span>
               )}
@@ -546,17 +546,17 @@ const OwnProfile = () => {
         </div>
 
         {/* Profile Information Section */}
-        <div className="px-8 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">Profile Information</h2>
+        <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Profile Information</h2>
           </div>
 
           {isEditing ? (
             /* Edit Form */
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="flex space-x-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
                 {/* Left Column - Bio and Skills */}
-                <div className="flex-1 space-y-6">
+                <div className="flex-1 space-y-4 sm:space-y-6">
                   {/* Bio */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
@@ -623,7 +623,7 @@ const OwnProfile = () => {
                 </div>
 
                 {/* Right Column - Other Information */}
-                <div className="w-80 space-y-6">
+                <div className="lg:w-80 lg:flex-shrink-0 space-y-4 sm:space-y-6">
                   {/* Basic Information */}
                   <div>
                     <h3 className="text-xl font-semibold text-gray-700 mb-4">Basic Information</h3>
@@ -695,41 +695,41 @@ const OwnProfile = () => {
             </form>
           ) : (
             /* Display Mode */
-            <div className="flex space-x-8">
+            <div className="flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
               {/* Left Column - Bio and Skills */}
               <div className="flex-1">
                 {/* Bio Section */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Bio</h2>
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <p className="text-gray-700 leading-relaxed">
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">Bio</h2>
+                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
                       {displayData?.bio || "Hi, I am Rohit kumar here"}
                     </p>
                   </div>
                 </div>
 
                 {/* Skills Section */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Skills</h2>
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <div className="flex flex-wrap gap-3">
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">Skills</h2>
+                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       {skills.length > 0 ? (
                         skills.map((skill, index) => (
                           <span
                             key={index}
-                            className={`px-4 py-2 rounded-full text-sm font-medium ${skill.skill_type === 'teach'
+                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${skill.skill_type === 'teach'
                               ? 'bg-blue-100 text-blue-800 border border-blue-200'
                               : 'bg-green-100 text-green-800 border border-green-200'
                               }`}
                           >
                             {skill.skill_name}
-                            <span className="ml-2 text-xs opacity-75">
+                            <span className="ml-1 sm:ml-2 text-xs opacity-75">
                               ({skill.skill_type === 'teach' ? 'Can Teach' : 'Learning'})
                             </span>
                           </span>
                         ))
                       ) : (
-                        <p className="text-gray-500">No skills added yet. Click "Edit Profile" to add your skills!</p>
+                        <p className="text-gray-500 text-sm sm:text-base">No skills added yet. Click "Edit Profile" to add your skills!</p>
                       )}
                     </div>
                   </div>
@@ -737,25 +737,25 @@ const OwnProfile = () => {
               </div>
 
               {/* Right Column - Profile Information */}
-              <div className="w-80">
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-6">Profile Information</h2>
+              <div className="lg:w-80 lg:flex-shrink-0">
+                <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Profile Information</h2>
 
                   {/* Basic Information */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">Basic Information</h3>
-                    <div className="space-y-3">
+                  <div className="mb-4 sm:mb-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">Basic Information</h3>
+                    <div className="space-y-2 sm:space-y-3">
                       <div>
-                        <span className="font-medium text-gray-600">Location:</span>
-                        <p className="text-gray-900">{displayData?.state || 'Sindh'}, {displayData?.country || 'Pakistan'}</p>
+                        <span className="font-medium text-gray-600 text-sm sm:text-base">Location:</span>
+                        <p className="text-gray-900 text-sm sm:text-base">{displayData?.state || 'Sindh'}, {displayData?.country || 'Pakistan'}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Timezone:</span>
-                        <p className="text-gray-900">{displayData?.timezone || 'Asia/Karachi'}</p>
+                        <span className="font-medium text-gray-600 text-sm sm:text-base">Timezone:</span>
+                        <p className="text-gray-900 text-sm sm:text-base">{displayData?.timezone || 'Asia/Karachi'}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Joined:</span>
-                        <p className="text-gray-900">
+                        <span className="font-medium text-gray-600 text-sm sm:text-base">Joined:</span>
+                        <p className="text-gray-900 text-sm sm:text-base">
                           {displayData?.created_at
                             ? new Date(displayData.created_at).toLocaleDateString('en-US', {
                               year: 'numeric',
@@ -766,12 +766,12 @@ const OwnProfile = () => {
                         </p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Institute:</span>
-                        <p className="text-gray-900">{displayData?.institute || 'MUET'}</p>
+                        <span className="font-medium text-gray-600 text-sm sm:text-base">Institute:</span>
+                        <p className="text-gray-900 text-sm sm:text-base">{displayData?.institute || 'MUET'}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Degree Level:</span>
-                        <p className="text-gray-900 capitalize">{displayData?.degree_level?.replace('_', ' ') || 'high_school'}</p>
+                        <span className="font-medium text-gray-600 text-sm sm:text-base">Degree Level:</span>
+                        <p className="text-gray-900 capitalize text-sm sm:text-base">{displayData?.degree_level?.replace('_', ' ') || 'High School'}</p>
                       </div>
                     </div>
                   </div>
@@ -783,17 +783,17 @@ const OwnProfile = () => {
           )}
 
           {/* Recommended Posts */}
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <RecommendedPosts />
           </div>
 
           {/* Badges & Achievements */}
-          <div className="mt-12">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">Badges & Achievements</h3>
+          <div className="mt-8 sm:mt-12">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 space-y-2 sm:space-y-0">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Badges & Achievements</h3>
               <button
                 onClick={() => navigate('/badges')}
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base self-start sm:self-auto"
               >
                 View All →
               </button>

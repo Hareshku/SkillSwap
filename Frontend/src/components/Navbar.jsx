@@ -39,7 +39,9 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="w-[2.5rem] h-[2.5rem] bg-black rounded-full"></div>
+              <div className="w-[2.5rem] h-[2.5rem] bg-black rounded-full">
+                <img src="./images/logo.png" alt="logo" class="rounded-full" />
+              </div>
             </Link>
           </div>
 
