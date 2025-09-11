@@ -15,7 +15,16 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return 'Date not available';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Date not available';
+    }
   };
 
   const getInitials = (name) => {

@@ -147,6 +147,9 @@ const Meeting = sequelize.define('Meeting', {
   }
 }, {
   tableName: 'meetings',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   indexes: [
     {
       fields: ['organizer_id']

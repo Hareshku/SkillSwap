@@ -70,29 +70,13 @@ export const getPersonalizedRecommendations = async (req, res) => {
     }
 
     // Build query conditions for matching posts
-    const matchConditions = [];
-
-    // Find posts where others teach what this user wants to learn
-    if (userLearningSkills.length > 0) {
-      userLearningSkills.forEach(skill => {
-        matchConditions.push({
-          skills_to_teach: {
-            [Op.like]: `%${skill}%`
-          }
-        });
-      });
-    }
-
-    // Find posts where others want to learn what this user can teach
-    if (userTeachingSkills.length > 0) {
-      userTeachingSkills.forEach(skill => {
-        matchConditions.push({
-          skills_to_learn: {
-            [Op.like]: `%${skill}%`
-          }
-        });
-      });
-    }
+    // Since Op.overlap doesn't work well with case-insensitive matching,
+    // we'll get all other posts and filter them manually
+    const matchConditions = {
+      user_id: { [Op.ne]: userId },
+      status: 'active',
+      is_approved: true
+    };
 
     if (matchConditions.length === 0) {
       return res.json({
@@ -112,14 +96,9 @@ export const getPersonalizedRecommendations = async (req, res) => {
 
 
 
-    // Get matching posts
-    const recommendedPosts = await Post.findAndCountAll({
-      where: {
-        user_id: { [Op.ne]: userId }, // Exclude user's own posts
-        status: 'active',
-        is_approved: true,
-        [Op.or]: matchConditions
-      },
+    // Get all other posts and filter manually for case-insensitive matching
+    const allOtherPosts = await Post.findAll({
+      where: matchConditions,
       include: [{
         model: User,
         as: 'author',
@@ -128,11 +107,43 @@ export const getPersonalizedRecommendations = async (req, res) => {
       order: [
         ['created_at', 'DESC'],
         ['id', 'DESC']
-      ],
-      limit,
-      offset,
-      distinct: true
+      ]
     });
+
+    // Filter posts manually for case-insensitive skill matching
+    const matchingPosts = allOtherPosts.filter(post => {
+      const postSkillsToTeach = Array.isArray(post.skills_to_teach)
+        ? post.skills_to_teach.map(skill => skill.toLowerCase())
+        : [];
+      const postSkillsToLearn = Array.isArray(post.skills_to_learn)
+        ? post.skills_to_learn.map(skill => skill.toLowerCase())
+        : [];
+
+      // Check if this post teaches what user wants to learn
+      const teachesWhatUserLearns = userLearningSkills.some(userLearningSkill =>
+        postSkillsToTeach.some(postTeachingSkill =>
+          postTeachingSkill.includes(userLearningSkill) || userLearningSkill.includes(postTeachingSkill)
+        )
+      );
+
+      // Check if this post wants to learn what user can teach
+      const learnsWhatUserTeaches = userTeachingSkills.some(userTeachingSkill =>
+        postSkillsToLearn.some(postLearningSkill =>
+          postLearningSkill.includes(userTeachingSkill) || userTeachingSkill.includes(postLearningSkill)
+        )
+      );
+
+      return teachesWhatUserLearns || learnsWhatUserTeaches;
+    });
+
+    // Apply pagination to filtered results
+    const total = matchingPosts.length;
+    const paginatedPosts = matchingPosts.slice(offset, offset + limit);
+
+    const recommendedPosts = {
+      rows: paginatedPosts,
+      count: total
+    };
 
 
 

@@ -52,9 +52,8 @@ const BadgeDisplay = ({ badges = [], maxDisplay = 3, showAll = false }) => {
           return (
             <div
               key={userBadge.id || index}
-              className={`relative group cursor-pointer transition-all duration-200 hover:scale-105 ${
-                showAll ? 'w-full' : 'w-auto'
-              }`}
+              className={`relative group cursor-pointer transition-all duration-200 hover:scale-105 ${showAll ? 'w-full' : 'w-auto'
+                }`}
               title={`${badge.name} - ${badge.description}`}
             >
               {showAll ? (
@@ -74,7 +73,7 @@ const BadgeDisplay = ({ badges = [], maxDisplay = 3, showAll = false }) => {
                         </span>
                         {userBadge.earned_at && (
                           <span className="text-xs text-gray-500">
-                            Earned {new Date(userBadge.earned_at).toLocaleDateString()}
+                            Earned {userBadge.earned_at ? new Date(userBadge.earned_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recently'}
                           </span>
                         )}
                       </div>
@@ -87,7 +86,7 @@ const BadgeDisplay = ({ badges = [], maxDisplay = 3, showAll = false }) => {
                   <span className="text-lg">{getBadgeTypeIcon(badge.badge_type)}</span>
                 </div>
               )}
-              
+
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                 <div className="font-medium">{badge.name}</div>
@@ -99,7 +98,7 @@ const BadgeDisplay = ({ badges = [], maxDisplay = 3, showAll = false }) => {
             </div>
           );
         })}
-        
+
         {/* Show remaining count */}
         {!showAll && remainingCount > 0 && (
           <div className="w-12 h-12 rounded-full border-2 border-gray-300 bg-gray-50 flex items-center justify-center">

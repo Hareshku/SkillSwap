@@ -60,7 +60,7 @@ const UserPosts = ({ userId }) => {
 
   return (
     <div className="space-y-4">
-      {userPosts.slice(0, 3).map((post) => (
+      {userPosts.map((post) => (
         <div key={post.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
           <h4 className="font-semibold text-gray-900 mb-2" style={{
             display: '-webkit-box',
@@ -78,37 +78,49 @@ const UserPosts = ({ userId }) => {
 
           {/* Skills Preview */}
           <div className="flex flex-wrap gap-1 mb-3">
-            {post.skills_to_teach?.slice(0, 2).map((skill, index) => (
+            {post.skills_to_teach?.slice(0, 3).map((skill, index) => (
               <span key={index} className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded">
                 {skill}
               </span>
             ))}
-            {post.skills_to_learn?.slice(0, 2).map((skill, index) => (
+            {post.skills_to_learn?.slice(0, 3).map((skill, index) => (
               <span key={index} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
                 {skill}
               </span>
             ))}
+            {post.skills_to_teach?.length > 3 && (
+              <span className="text-xs text-green-600">+{post.skills_to_teach.length - 3} more</span>
+            )}
+            {post.skills_to_learn?.length > 3 && (
+              <span className="text-xs text-blue-600">+{post.skills_to_learn.length - 3} more</span>
+            )}
           </div>
 
           <div className="flex justify-between items-center text-xs text-gray-500">
-            <span>{new Date(post.created_at).toLocaleDateString()}</span>
+            <span>
+              {post.created_at
+                ? new Date(post.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })
+                : 'Date not available'
+              }
+            </span>
             <button
               onClick={() => navigate('/discover')}
               className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              View
+              View Details
             </button>
           </div>
         </div>
       ))}
 
-      {userPosts.length > 3 && (
-        <button
-          onClick={() => navigate('/discover')}
-          className="w-full text-center py-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
-        >
-          View all posts ({userPosts.length})
-        </button>
+      {userPosts.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <p>This user hasn't created any posts yet.</p>
+        </div>
       )}
     </div>
   );
@@ -511,7 +523,14 @@ const UserProfile = () => {
                                 <div>
                                   <div className="font-medium text-gray-900">{review.reviewer?.full_name || 'Anonymous'}</div>
                                   <div className="text-xs text-gray-500">
-                                    {new Date(review.created_at).toLocaleDateString()}
+                                    {review.created_at
+                                      ? new Date(review.created_at).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                      })
+                                      : 'Date not available'
+                                    }
                                   </div>
                                 </div>
                               </div>

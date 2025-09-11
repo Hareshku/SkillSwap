@@ -67,23 +67,10 @@ const RecommendedPosts = () => {
       <div>
         <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Recommended Posts</h3>
         <div className="bg-gray-50 p-6 rounded-lg text-center">
-          <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">
-              {recommendedPosts.length === 0 && loading === false ?
-                'Create your first post to get personalized recommendations! Share what you can teach and what you want to learn.' :
-                'No recommendations yet. Add skills to your posts to get personalized recommendations!'
-              }
-            </p>
-            <button
-              onClick={() => navigate('/create-post')}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Create Your First Post →
-            </button>
-          </div>
+          <p className="text-gray-600 text-sm">No recommendations available</p>
         </div>
       </div>
     );
@@ -218,7 +205,14 @@ const RecommendedPosts = () => {
             {/* Post Footer */}
             <div className="flex justify-between items-center pt-4 border-t border-gray-100">
               <span className="text-xs text-gray-500">
-                {new Date(post.created_at).toLocaleDateString()}
+                {post.created_at
+                  ? new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })
+                  : 'Date not available'
+                }
               </span>
               <button
                 onClick={() => {
@@ -761,7 +755,7 @@ const OwnProfile = () => {
                               year: 'numeric',
                               month: 'long'
                             })
-                            : 'Invalid Date'
+                            : 'Not available'
                           }
                         </p>
                       </div>

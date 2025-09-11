@@ -49,19 +49,23 @@ const BadgeCard = ({ badge, userBadge = null, isEarned = false, showProgress = f
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    if (!dateString) return 'Date not available';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Date not available';
+    }
   };
 
   return (
-    <div className={`relative p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
-      isEarned 
-        ? 'bg-white border-green-300 shadow-sm' 
+    <div className={`relative p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${isEarned
+        ? 'bg-white border-green-300 shadow-sm'
         : 'bg-gray-50 border-gray-200 opacity-75'
-    }`}>
+      }`}>
       {/* Badge Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-2">
@@ -80,7 +84,7 @@ const BadgeCard = ({ badge, userBadge = null, isEarned = false, showProgress = f
             </div>
           </div>
         </div>
-        
+
         {isEarned && (
           <div className="flex flex-col items-end">
             <span className="text-green-600 text-xl">✓</span>
@@ -119,10 +123,10 @@ const BadgeCard = ({ badge, userBadge = null, isEarned = false, showProgress = f
             <span>{badge.progress.current}/{badge.progress.required}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ 
-                width: `${Math.min((badge.progress.current / badge.progress.required) * 100, 100)}%` 
+              style={{
+                width: `${Math.min((badge.progress.current / badge.progress.required) * 100, 100)}%`
               }}
             ></div>
           </div>

@@ -124,7 +124,7 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
-// Get user's posts
+// Get user's posts (current user)
 export const getUserPosts = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -137,7 +137,7 @@ export const getUserPosts = async (req, res) => {
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'author',
           attributes: { exclude: ['password'] }
         }
       ],
@@ -160,6 +160,50 @@ export const getUserPosts = async (req, res) => {
     });
   } catch (error) {
     console.error('Get user posts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user posts'
+    });
+  }
+};
+
+// Get posts by specific user ID
+export const getPostsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+
+    const posts = await Post.findAndCountAll({
+      where: {
+        user_id: userId,
+        status: 'active' // Only show active posts
+      },
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: { exclude: ['password'] }
+        }
+      ],
+      limit,
+      offset,
+      order: [['created_at', 'DESC']]
+    });
+
+    res.json({
+      success: true,
+      data: posts.rows,
+      pagination: {
+        total: posts.count,
+        page,
+        pages: Math.ceil(posts.count / limit),
+        limit
+      }
+    });
+  } catch (error) {
+    console.error('Get posts by user ID error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch user posts'
@@ -307,7 +351,7 @@ export const deletePost = async (req, res) => {
 export const getRecommendedPosts = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     // Get user's skills
     const userSkills = await Skill.findAll({
       where: { user_id: userId },

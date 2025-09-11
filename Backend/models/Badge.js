@@ -110,6 +110,9 @@ const UserBadge = sequelize.define('UserBadge', {
   }
 }, {
   tableName: 'user_badges',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   indexes: [
     {
       unique: true,

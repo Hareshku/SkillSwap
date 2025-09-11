@@ -6,6 +6,7 @@ import {
   createPost,
   getAllPosts,
   getUserPosts,
+  getPostsByUserId,
   getPost,
   updatePost,
   deletePost,
@@ -154,6 +155,17 @@ router.get('/my-posts',
   paginationValidation,
   validateRequest,
   getUserPosts
+);
+
+// Get posts by specific user ID
+router.get('/user/:userId',
+  authenticateToken,
+  param('userId')
+    .isInt()
+    .withMessage('User ID must be a valid integer'),
+  paginationValidation,
+  validateRequest,
+  getPostsByUserId
 );
 
 // Get single post by ID

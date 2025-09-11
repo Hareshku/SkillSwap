@@ -97,6 +97,9 @@ const Report = sequelize.define('Report', {
   }
 }, {
   tableName: 'reports',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   indexes: [
     {
       fields: ['reporter_id']

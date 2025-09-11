@@ -176,7 +176,7 @@ const ReviewModal = ({
                     <option value="">Select a meeting (optional)</option>
                     {availableMeetings.map(meeting => (
                       <option key={meeting.id} value={meeting.id}>
-                        {meeting.title} - {new Date(meeting.meeting_date).toLocaleDateString()}
+                        {meeting.title} - {meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Date TBD'}
                       </option>
                     ))}
                   </select>
