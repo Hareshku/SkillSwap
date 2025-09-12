@@ -234,8 +234,7 @@ const Home = () => {
             {/* Right side - Content */}
             <div className="order-1 lg:order-2">
               <p
-                className="text-gray-600 leading-relaxed mb-8"
-                style={{ fontSize: "1.125rem" }}
+                className="text-2xl text-gray-700 leading-relaxed mb-8"
               >
                 SkillSwap is a platform dedicated to connecting people who want
                 to learn with those who want to teach. We believe that everyone
@@ -251,7 +250,7 @@ const Home = () => {
                       <span className="text-white text-lg">👥</span>
                     </div>
                   </div>
-                  <p className="text-gray-700" style={{ fontSize: "1.125rem" }}>
+                  <p className="text-2xl text-gray-700" >
                     Connect with a diverse community of experts and learners
                   </p>
                 </div>
@@ -263,7 +262,7 @@ const Home = () => {
                       <span className="text-white text-lg">🎓</span>
                     </div>
                   </div>
-                  <p className="text-gray-700" style={{ fontSize: "1.125rem" }}>
+                  <p className="text-2xl text-gray-700">
                     Learn new skills at your own pace with personalized guidance
                   </p>
                 </div>
@@ -275,7 +274,7 @@ const Home = () => {
                       <span className="text-white text-lg">💡</span>
                     </div>
                   </div>
-                  <p className="text-gray-700" style={{ fontSize: "1.125rem" }}>
+                  <p className="text-2xl text-gray-700">
                     Share your expertise and earn while helping others grow
                   </p>
                 </div>
@@ -287,7 +286,7 @@ const Home = () => {
                       <span className="text-white text-lg">📚</span>
                     </div>
                   </div>
-                  <p className="text-gray-700" style={{ fontSize: "1.125rem" }}>
+                  <p className="text-2xl text-gray-700">
                     Access a wide range of courses and resources in various
                     fields
                   </p>
@@ -295,12 +294,6 @@ const Home = () => {
               </div>
 
               {/* Call to Action Button */}
-              <div className="mt-8">
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center">
-                  Discover Our Community
-                  <span className="ml-2">→</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -325,7 +318,7 @@ const Home = () => {
               <div className="mb-6">
                 <p
                   className="text-gray-600 italic leading-relaxed"
-                  style={{ fontSize: "1.125rem" }}
+                  style={{ fontSize: "1.25rem" }}
                 >
                   "SkillSwap changed my life! I found new friends and learned to
                   draw."
@@ -346,7 +339,7 @@ const Home = () => {
               <div className="mb-6">
                 <p
                   className="text-gray-600 italic leading-relaxed"
-                  style={{ fontSize: "1.125rem" }}
+                  style={{ fontSize: "1.25rem" }}
                 >
                   "I never thought I would learn a programming language so
                   quickly and with such pleasure!"
@@ -367,7 +360,7 @@ const Home = () => {
               <div className="mb-6">
                 <p
                   className="text-gray-600 italic leading-relaxed"
-                  style={{ fontSize: "1.125rem" }}
+                  style={{ fontSize: "1.25rem" }}
                 >
                   "The best platform for those who want to expand their horizons
                   and share knowledge."
@@ -397,7 +390,7 @@ const Home = () => {
               Frequently Asked Questions
             </h2>
             <div className="w-16 h-1 bg-primary-10 mx-auto mb-6"></div>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-2xl">
               Find answers to the most popular questions about our platform
             </p>
           </div>
@@ -437,14 +430,7 @@ const Home = () => {
                         onClick={() => toggleFAQ(faq.id)}
                       >
                         <div>
-                          <div
-                            className={`${getCategoryColor(
-                              faq.category
-                            )} text-sm font-medium mb-1`}
-                          >
-                            {faq.category}
-                          </div>
-                          <h3 className="text-gray-800 font-medium text-lg">
+                          <h3 className="text-gray-500 font-medium text-[1.25rem]">
                             {faq.question}
                           </h3>
                         </div>
@@ -479,14 +465,7 @@ const Home = () => {
                         onClick={() => toggleFAQ(faq.id)}
                       >
                         <div>
-                          <div
-                            className={`${getCategoryColor(
-                              faq.category
-                            )} text-sm font-medium mb-1`}
-                          >
-                            {faq.category}
-                          </div>
-                          <h3 className="text-gray-800 font-medium text-lg">
+                          <h3 className="text-gray-500 font-medium text-[1.25rem]">
                             {faq.question}
                           </h3>
                         </div>
@@ -513,7 +492,7 @@ const Home = () => {
           <div className="flex justify-center mt-12 mb-16">
             <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8 max-w-md w-full mx-4">
               <div className="text-center">
-                <p className="text-gray-600 mb-6 text-lg">
+                <p className="text-gray-600 mb-6 text-[1.25rem]">
                   Didn't find an answer to your question?
                 </p>
                 <Link
@@ -548,13 +527,13 @@ const Home = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-sm">
+                          <span className="text-gray-600 font-bold text-[1.25rem]">
                             1
                           </span>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-gray-600 font-normal text-lg">
+                        <h3 className="text-gray-600 font-normal text-[1.25rem]">
                           Register and create a profile
                         </h3>
                       </div>
@@ -564,13 +543,13 @@ const Home = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-sm">
+                          <span className="text-gray-600 font-bold text-[1.25rem]">
                             2
                           </span>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-gray-600 font-normal text-lg">
+                        <h3 className="text-gray-600 font-normal text-[1.25rem]">
                           Specify the skills you have
                         </h3>
                       </div>
@@ -580,13 +559,13 @@ const Home = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-sm">
+                          <span className="text-gray-600 font-bold text-[1.25rem]">
                             3
                           </span>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-gray-600 font-normal text-lg">
+                        <h3 className="text-gray-600 font-normal text-[1.25rem]">
                           Choose skills you want to learn
                         </h3>
                       </div>
@@ -596,13 +575,13 @@ const Home = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-sm">
+                          <span className="text-gray-600 font-bold text-[1.25rem]">
                             5
                           </span>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-gray-600 font-normal text-lg">
+                        <h3 className="text-gray-600 font-normal text-[1.25rem]">
                           Start exchanging skills and knowledge
                         </h3>
                       </div>
@@ -613,7 +592,7 @@ const Home = () => {
                   <div className="space-y-8">
                     {/* Tip */}
                     <div className="bg-white rounded-lg p-6 shadow-sm">
-                      <p className="text-gray-600 font-normal text-center">
+                      <p className="text-[1.25rem] text-gray-600 font-normal text-center">
                         <span className="font-semibold">Tip:</span> Start small!
                         Choose one skill to learn and one to teach.
                       </p>
@@ -623,13 +602,13 @@ const Home = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 font-bold text-sm">
+                          <span className="text-gray-600 font-bold text-[1.25rem]">
                             4
                           </span>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-gray-600 font-normal text-lg">
+                        <h3 className="text-gray-600 font-normal text-[1.25rem]">
                           Find a suitable exchange partner
                         </h3>
                       </div>
@@ -660,7 +639,7 @@ const Home = () => {
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
                   Join Now
                 </h2>
-                <p className="text-gray-500 text-lg mb-8">
+                <p className="text-gray-500 text-[1.25rem] mb-8">
                   Do you want to start your journey?
                 </p>
                 <Link
