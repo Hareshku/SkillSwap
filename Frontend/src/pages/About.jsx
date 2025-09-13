@@ -115,7 +115,7 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Our Values
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-[1.4rem] max-w-2xl mx-auto">
               These core principles guide everything we do at SkillSwap.
             </p>
           </div>
@@ -284,7 +284,7 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Meet Our Team
             </h2>
-            <p className="text-gray-600 text-[1.4rem] max-w-2xl mx-auto">
+            <p className="text-gray-600 text-[1.4rem] max-w-[50rem] mx-auto">
               The passionate individuals behind SkillSwap who are dedicated to
               our mission.
             </p>

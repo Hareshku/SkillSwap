@@ -196,39 +196,6 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">FAQ</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    How do I become a mentor?
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    Simply sign up and create your mentor profile. Share your
-                    skills and start connecting with learners!
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    Is SkillSwap free to use?
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    Yes! SkillSwap is completely free. We believe in making
-                    knowledge accessible to everyone.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    How are mentors verified?
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    We have a comprehensive verification process that includes
-                    skill assessment and community reviews.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

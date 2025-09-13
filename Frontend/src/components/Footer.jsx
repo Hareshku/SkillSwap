@@ -8,7 +8,7 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-primary-400">GrowTogather</span>
+              <span className="text-2xl font-bold text-primary-400">SkillSwap</span>
             </Link>
             <p className="text-gray-300 mb-4 max-w-md">
               Connect with fellow learners and share your skills. Build a community where everyone grows together through knowledge exchange.
@@ -93,7 +93,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} GrowTogather. All rights reserved.
+            © {new Date().getFullYear()} SkillSwap. All rights reserved.
           </p>
           <p className="text-gray-400 text-sm mt-2 md:mt-0">
             Made with ❤️ for the learning community
