@@ -51,8 +51,16 @@ const scheduleMeetingValidation = [
     .withMessage('Meeting type must be online or offline'),
   body('meetingLink')
     .optional()
-    .isURL()
-    .withMessage('Meeting link must be a valid URL'),
+    .custom((value) => {
+      if (value && value.trim()) {
+        // Basic URL validation - must start with http:// or https://
+        const urlPattern = /^https?:\/\/.+/i;
+        if (!urlPattern.test(value.trim())) {
+          throw new Error('Meeting link must be a valid URL starting with http:// or https://');
+        }
+      }
+      return true;
+    }),
   body('agenda')
     .optional()
     .isArray()
@@ -92,8 +100,16 @@ const updateMeetingValidation = [
     .withMessage('Meeting type must be online or offline'),
   body('meetingLink')
     .optional()
-    .isURL()
-    .withMessage('Meeting link must be a valid URL'),
+    .custom((value) => {
+      if (value && value.trim()) {
+        // Basic URL validation - must start with http:// or https://
+        const urlPattern = /^https?:\/\/.+/i;
+        if (!urlPattern.test(value.trim())) {
+          throw new Error('Meeting link must be a valid URL starting with http:// or https://');
+        }
+      }
+      return true;
+    }),
   body('agenda')
     .optional()
     .isArray()

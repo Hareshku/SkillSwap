@@ -33,12 +33,15 @@ const Discover = () => {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: searchQuery,
-          post_type: filterType === 'all' ? undefined : filterType
+          post_type: filterType === 'all' ? undefined : filterType,
+          limit: 1000 // Request all posts
         }
       });
+
       setPosts(response.data.data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
+      console.error('Error details:', error.response?.data);
     } finally {
       setLoading(false);
     }

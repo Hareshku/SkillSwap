@@ -32,13 +32,16 @@ const RecommendedPosts = () => {
       if (!user || !token) return;
 
       try {
+        console.log('Fetching recommendations for user:', user?.id);
         const response = await axios.get('/api/recommendations?limit=6', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
+        console.log('Recommendations response:', response.data);
         setRecommendedPosts(response.data.data?.posts || []);
       } catch (error) {
         console.error('Error fetching recommended posts:', error);
+        console.error('Error details:', error.response?.data);
 
         setRecommendedPosts([]);
       } finally {
@@ -94,9 +97,9 @@ const RecommendedPosts = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {recommendedPosts.slice(0, 6).map((post) => (
-          <div key={post.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+      <div className="space-y-4">
+        {recommendedPosts.slice(0, 2).map((post) => (
+          <div key={post.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
             {/* Post Header */}
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
@@ -319,7 +322,8 @@ const OwnProfile = () => {
         const messagesResponse = await axios.get('/api/messages/unread-count', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setUnreadMessages(messagesResponse.data.data?.count || 0);
+        console.log('Unread messages response:', messagesResponse.data);
+        setUnreadMessages(messagesResponse.data.data?.unreadCount || 0);
       } catch (error) {
         console.error('Error fetching unread messages:', error);
         setUnreadMessages(0);
@@ -327,10 +331,11 @@ const OwnProfile = () => {
 
       // Fetch pending connection requests
       try {
-        const requestsResponse = await axios.get('/api/connections/pending', {
+        const requestsResponse = await axios.get('/api/connections/incoming', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        const requests = requestsResponse.data.data?.requests || [];
+        console.log('Pending requests response:', requestsResponse.data);
+        const requests = requestsResponse.data.data || [];
         setPendingRequests(requests.length);
       } catch (error) {
         console.error('Error fetching pending requests:', error);
@@ -481,60 +486,68 @@ const OwnProfile = () => {
               onClick={() => navigate('/messages')}
               className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
+              <div className="relative">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                {unreadMessages > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                    {unreadMessages > 9 ? '9+' : unreadMessages}
+                  </span>
+                )}
+              </div>
               <span className="text-sm sm:text-base">Messages</span>
-              {unreadMessages > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
-                  {unreadMessages}
-                </span>
-              )}
             </button>
 
             <button
               onClick={() => navigate('/badges')}
               className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
+              <div className="relative">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                {newBadges > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                    {newBadges > 9 ? '9+' : newBadges}
+                  </span>
+                )}
+              </div>
               <span className="text-sm sm:text-base">Badges</span>
-              {newBadges > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
-                  {newBadges}
-                </span>
-              )}
             </button>
 
             <button
               onClick={() => navigate('/meetings')}
               className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <div className="relative">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {pendingMeetings > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                    {pendingMeetings > 9 ? '9+' : pendingMeetings}
+                  </span>
+                )}
+              </div>
               <span className="text-sm sm:text-base">Meetings</span>
-              {pendingMeetings > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
-                  {pendingMeetings}
-                </span>
-              )}
             </button>
 
             <button
               onClick={() => navigate('/connection-requests')}
               className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-blue-500 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.25" />
-              </svg>
+              <div className="relative">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.25" />
+                </svg>
+                {pendingRequests > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                    {pendingRequests > 9 ? '9+' : pendingRequests}
+                  </span>
+                )}
+              </div>
               <span className="text-sm sm:text-base">Requests</span>
-              {pendingRequests > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-[16px] sm:min-w-[20px] text-center">
-                  {pendingRequests}
-                </span>
-              )}
             </button>
           </div>
         </div>

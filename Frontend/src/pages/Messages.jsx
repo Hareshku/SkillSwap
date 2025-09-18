@@ -125,7 +125,7 @@ const Messages = () => {
   // Auto-open conversation if user data is passed from UserProfile
   useEffect(() => {
     const openConversationWith = location.state?.openConversationWith;
-    if (openConversationWith && conversations.length > 0) {
+    if (openConversationWith && !loading) {
       // Find existing conversation with this user
       const existingConversation = conversations.find(conv =>
         conv.partner.id === parseInt(openConversationWith.id)
@@ -153,7 +153,7 @@ const Messages = () => {
       // Clear the state to prevent re-opening on subsequent renders
       window.history.replaceState({}, document.title);
     }
-  }, [conversations, location.state]);
+  }, [conversations, location.state, loading]);
 
   if (loading) {
     return (

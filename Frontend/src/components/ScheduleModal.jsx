@@ -28,16 +28,22 @@ const ScheduleModal = ({ isOpen, onClose, participantUser }) => {
     setLoading(true);
 
     try {
-      await axios.post('/api/meetings', {
+      const meetingData = {
         participantId: participantUser.id,
         title: formData.title,
         description: formData.description,
         scheduledAt: formData.scheduledAt,
         duration: parseInt(formData.duration),
         meetingType: formData.meetingType,
-        meetingLink: formData.meetingLink || null,
         agenda: formData.agenda.filter(item => item.trim())
-      }, {
+      };
+
+      // Only include meetingLink if it's a valid URL
+      if (formData.meetingLink && formData.meetingLink.trim()) {
+        meetingData.meetingLink = formData.meetingLink.trim();
+      }
+
+      await axios.post('/api/meetings', meetingData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -54,7 +60,17 @@ const ScheduleModal = ({ isOpen, onClose, participantUser }) => {
       onClose();
     } catch (error) {
       console.error('Error scheduling meeting:', error);
-      alert(error.response?.data?.message || 'Failed to schedule meeting. Please try again.');
+
+      let errorMessage = 'Failed to schedule meeting. Please try again.';
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        // Handle validation errors
+        errorMessage = error.response.data.errors.map(err => err.msg).join('\n');
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

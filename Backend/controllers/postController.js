@@ -58,12 +58,13 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 1000; // Show all posts by default
     const offset = (page - 1) * limit;
     const { skills, post_type, search } = req.query;
 
     let whereClause = {
-      status: 'active'
+      status: 'active',
+      is_approved: true
     };
 
     // Add search filter
@@ -104,6 +105,8 @@ export const getAllPosts = async (req, res) => {
       offset,
       order: [['created_at', 'DESC']]
     });
+
+
 
     res.json({
       success: true,
