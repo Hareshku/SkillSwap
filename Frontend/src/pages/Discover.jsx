@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import SkillExchangeCard from '../components/SkillExchangeCard';
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import SkillExchangeCard from "../components/SkillExchangeCard";
 
 const Discover = () => {
   const { user, token } = useAuth();
@@ -13,13 +13,19 @@ const Discover = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [skillsToLearn, setSkillsToLearn] = useState([]);
   const [skillsToTeach, setSkillsToTeach] = useState([]);
-  const [newSkillLearn, setNewSkillLearn] = useState('');
-  const [newSkillTeach, setNewSkillTeach] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
+  const [newSkillLearn, setNewSkillLearn] = useState("");
+  const [newSkillTeach, setNewSkillTeach] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [showProfileIncompleteModal, setShowProfileIncompleteModal] =
+    useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   // Fetch posts on component mount
   useEffect(() => {
@@ -29,19 +35,19 @@ const Discover = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/posts', {
+      const response = await axios.get("/api/posts", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: searchQuery,
-          post_type: filterType === 'all' ? undefined : filterType,
-          limit: 1000 // Request all posts
-        }
+          post_type: filterType === "all" ? undefined : filterType,
+          limit: 1000, // Request all posts
+        },
       });
 
       setPosts(response.data.data || []);
     } catch (error) {
-      console.error('Error fetching posts:', error);
-      console.error('Error details:', error.response?.data);
+      console.error("Error fetching posts:", error);
+      console.error("Error details:", error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -50,29 +56,29 @@ const Discover = () => {
   const addSkillToLearn = () => {
     if (newSkillLearn.trim() && !skillsToLearn.includes(newSkillLearn.trim())) {
       setSkillsToLearn([...skillsToLearn, newSkillLearn.trim()]);
-      setNewSkillLearn('');
+      setNewSkillLearn("");
     }
   };
 
   const addSkillToTeach = () => {
     if (newSkillTeach.trim() && !skillsToTeach.includes(newSkillTeach.trim())) {
       setSkillsToTeach([...skillsToTeach, newSkillTeach.trim()]);
-      setNewSkillTeach('');
+      setNewSkillTeach("");
     }
   };
 
   const removeSkillToLearn = (skill) => {
-    setSkillsToLearn(skillsToLearn.filter(s => s !== skill));
+    setSkillsToLearn(skillsToLearn.filter((s) => s !== skill));
   };
 
   const removeSkillToTeach = (skill) => {
-    setSkillsToTeach(skillsToTeach.filter(s => s !== skill));
+    setSkillsToTeach(skillsToTeach.filter((s) => s !== skill));
   };
 
   const onSubmitPost = async (data) => {
     try {
       if (skillsToLearn.length === 0 || skillsToTeach.length === 0) {
-        alert('Please add at least one skill to learn and one skill to teach');
+        alert("Please add at least one skill to learn and one skill to teach");
         return;
       }
 
@@ -80,22 +86,22 @@ const Discover = () => {
       const postData = {
         ...data,
         skills_to_learn: skillsToLearn,
-        skills_to_teach: skillsToTeach
+        skills_to_teach: skillsToTeach,
       };
 
-      await axios.post('/api/posts', postData, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.post("/api/posts", postData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert('Post created successfully!');
+      alert("Post created successfully!");
       setShowCreateModal(false);
       reset();
       setSkillsToLearn([]);
       setSkillsToTeach([]);
       fetchPosts(); // Refresh posts
     } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
+      console.error("Error creating post:", error);
+      alert("Failed to create post. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -106,9 +112,9 @@ const Discover = () => {
   };
 
   const viewProfile = (userId) => {
-    console.log('Navigating to profile with userId:', userId);
+    console.log("Navigating to profile with userId:", userId);
     if (!userId) {
-      console.error('No userId provided');
+      console.error("No userId provided");
       return;
     }
     navigate(`/profile/${userId}`);
@@ -117,8 +123,8 @@ const Discover = () => {
   const handleCreatePostClick = () => {
     // Check if user is loaded and has completed their profile
     if (!user) {
-      alert('Please log in to create a post');
-      navigate('/login');
+      alert("Please log in to create a post");
+      navigate("/login");
       return;
     }
 
@@ -131,7 +137,7 @@ const Discover = () => {
 
   const handleGoToProfile = () => {
     setShowProfileIncompleteModal(false);
-    navigate('/community-registration');
+    navigate("/community-registration");
   };
 
   return (
@@ -141,7 +147,9 @@ const Discover = () => {
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Discover Skills</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                Discover Skills
+              </h1>
               <p className="text-gray-300 mt-2">
                 Find learning opportunities and connect with fellow learners
               </p>
@@ -167,7 +175,7 @@ const Discover = () => {
                 className="w-full px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
               />
             </div>
-            <div>
+            {/* <div>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -178,7 +186,7 @@ const Discover = () => {
                 <option value="teach">Teaching</option>
                 <option value="learn">Learning</option>
               </select>
-            </div>
+            </div> */}
             <button
               onClick={handleSearch}
               className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
@@ -197,7 +205,9 @@ const Discover = () => {
           ) : posts.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-white mb-2">No posts found</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No posts found
+              </h3>
               <p className="text-gray-300 mb-4">
                 Be the first to create a skill exchange post!
               </p>
@@ -225,15 +235,27 @@ const Discover = () => {
             <div className="bg-white rounded-lg max-w-md w-full p-6">
               <div className="text-center">
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
-                  <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <svg
+                    className="h-6 w-6 text-yellow-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Complete Your Profile First
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Please complete your profile registration before creating posts. This helps other community members learn more about you and your skills.
+                  Please complete your profile registration before creating
+                  posts. This helps other community members learn more about you
+                  and your skills.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
@@ -260,18 +282,33 @@ const Discover = () => {
             <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Create New Post</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Create New Post
+                  </h2>
                   <button
                     onClick={() => setShowCreateModal(false)}
                     className="text-gray-400 hover:text-gray-600"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmitPost)} className="space-y-6">
+                <form
+                  onSubmit={handleSubmit(onSubmitPost)}
+                  className="space-y-6"
+                >
                   {/* Title */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -279,16 +316,24 @@ const Discover = () => {
                     </label>
                     <input
                       type="text"
-                      {...register('title', {
-                        required: 'Title is required',
-                        minLength: { value: 5, message: 'Title must be at least 5 characters' },
-                        maxLength: { value: 200, message: 'Title must not exceed 200 characters' }
+                      {...register("title", {
+                        required: "Title is required",
+                        minLength: {
+                          value: 5,
+                          message: "Title must be at least 5 characters",
+                        },
+                        maxLength: {
+                          value: 200,
+                          message: "Title must not exceed 200 characters",
+                        },
                       })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="e.g., Looking to exchange React skills for Python tutoring"
                     />
                     {errors.title && (
-                      <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.title.message}
+                      </p>
                     )}
                   </div>
 
@@ -298,17 +343,26 @@ const Discover = () => {
                       Description *
                     </label>
                     <textarea
-                      {...register('description', {
-                        required: 'Description is required',
-                        minLength: { value: 10, message: 'Description must be at least 10 characters' },
-                        maxLength: { value: 2000, message: 'Description must not exceed 2000 characters' }
+                      {...register("description", {
+                        required: "Description is required",
+                        minLength: {
+                          value: 10,
+                          message: "Description must be at least 10 characters",
+                        },
+                        maxLength: {
+                          value: 2000,
+                          message:
+                            "Description must not exceed 2000 characters",
+                        },
                       })}
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="Describe what you're looking for and what you can offer..."
                     />
                     {errors.description && (
-                      <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.description.message}
+                      </p>
                     )}
                   </div>
 
@@ -322,7 +376,10 @@ const Discover = () => {
                         type="text"
                         value={newSkillTeach}
                         onChange={(e) => setNewSkillTeach(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkillToTeach())}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          (e.preventDefault(), addSkillToTeach())
+                        }
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="Enter a skill you can teach"
                       />
@@ -336,7 +393,10 @@ const Discover = () => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {skillsToTeach.map((skill, index) => (
-                        <span key={index} className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full flex items-center gap-1">
+                        <span
+                          key={index}
+                          className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full flex items-center gap-1"
+                        >
                           {skill}
                           <button
                             type="button"
@@ -349,7 +409,9 @@ const Discover = () => {
                       ))}
                     </div>
                     {skillsToTeach.length === 0 && (
-                      <p className="text-sm text-gray-500 mt-1">Add at least one skill you can teach</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Add at least one skill you can teach
+                      </p>
                     )}
                   </div>
 
@@ -363,7 +425,10 @@ const Discover = () => {
                         type="text"
                         value={newSkillLearn}
                         onChange={(e) => setNewSkillLearn(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkillToLearn())}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          (e.preventDefault(), addSkillToLearn())
+                        }
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="Enter a skill you want to learn"
                       />
@@ -377,7 +442,10 @@ const Discover = () => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {skillsToLearn.map((skill, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full flex items-center gap-1">
+                        <span
+                          key={index}
+                          className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full flex items-center gap-1"
+                        >
                           {skill}
                           <button
                             type="button"
@@ -390,7 +458,9 @@ const Discover = () => {
                       ))}
                     </div>
                     {skillsToLearn.length === 0 && (
-                      <p className="text-sm text-gray-500 mt-1">Add at least one skill you want to learn</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Add at least one skill you want to learn
+                      </p>
                     )}
                   </div>
 
@@ -400,7 +470,9 @@ const Discover = () => {
                       Experience Level *
                     </label>
                     <select
-                      {...register('experience_level', { required: 'Experience level is required' })}
+                      {...register("experience_level", {
+                        required: "Experience level is required",
+                      })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="">Select your experience level</option>
@@ -410,7 +482,9 @@ const Discover = () => {
                       <option value="expert">Expert</option>
                     </select>
                     {errors.experience_level && (
-                      <p className="mt-1 text-sm text-red-600">{errors.experience_level.message}</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.experience_level.message}
+                      </p>
                     )}
                   </div>
 
@@ -420,7 +494,7 @@ const Discover = () => {
                       Preferred Meeting Type
                     </label>
                     <select
-                      {...register('preferred_meeting_type')}
+                      {...register("preferred_meeting_type")}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="online">Online</option>
@@ -435,7 +509,7 @@ const Discover = () => {
                       Availability (Optional)
                     </label>
                     <textarea
-                      {...register('availability')}
+                      {...register("availability")}
                       rows={2}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="e.g., Weekends, evenings after 6 PM, flexible schedule..."
@@ -456,7 +530,7 @@ const Discover = () => {
                       disabled={loading}
                       className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
                     >
-                      {loading ? 'Creating...' : 'Create Post'}
+                      {loading ? "Creating..." : "Create Post"}
                     </button>
                   </div>
                 </form>
@@ -464,8 +538,6 @@ const Discover = () => {
             </div>
           </div>
         )}
-
-
       </div>
     </div>
   );

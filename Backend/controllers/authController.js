@@ -97,8 +97,9 @@ const performLogin = async (email, password, requiredRole = null) => {
     attributes: { include: ['password'] }
   });
 
+  console.log("Testing the admin login ======",user);
   if (!user) {
-    throw new Error('Invalid email or password');
+    throw new Error('Invalid email ');
   }
 
   // Check if account is active
@@ -114,7 +115,7 @@ const performLogin = async (email, password, requiredRole = null) => {
   // Verify password
   const isPasswordValid = await user.comparePassword(password);
   if (!isPasswordValid) {
-    throw new Error('Invalid email or password');
+    throw new Error('Invalid password');
   }
 
   // Generate tokens

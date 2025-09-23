@@ -50,6 +50,7 @@ const Login = () => {
       let result;
       if (loginType === "admin") {
         result = await loginAdmin(formData.email, formData.password);
+        console.log("admin role =======", formData.email, formData.password);
       } else {
         result = await loginUser(formData.email, formData.password);
       }
