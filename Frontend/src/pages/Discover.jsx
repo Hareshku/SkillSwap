@@ -17,6 +17,7 @@ const Discover = () => {
   const [newSkillTeach, setNewSkillTeach] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [isSearchMode, setIsSearchMode] = useState(false);
   const [showProfileIncompleteModal, setShowProfileIncompleteModal] =
     useState(false);
 
@@ -27,27 +28,79 @@ const Discover = () => {
     reset,
   } = useForm();
 
-  // Fetch posts on component mount
+  // Fetch posts on component mount (only load all posts initially)
   useEffect(() => {
+    console.log('🔄 useEffect: Component mounted, searchQuery:', searchQuery);
+    // Only load all posts on initial mount if no search is active
     fetchPosts();
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
+
+  // Track posts state changes for debugging
+  useEffect(() => {
+    console.log('🎨 Posts state changed. Total posts:', posts.length, 'Search query:', searchQuery, 'IsSearchMode:', isSearchMode);
+    if (searchQuery && searchQuery.trim() !== '') {
+      console.log('🗒 Filtered posts being displayed:', posts.map(p => p.title));
+    } else {
+      console.log('📋 All posts being displayed:', posts.map(p => p.title));
+    }
+  }, [posts, searchQuery, isSearchMode]);
+
+  // Track search state changes
+  useEffect(() => {
+    console.log('🔄 Search state changed - Query:', searchQuery, 'IsSearchMode:', isSearchMode);
+  }, [searchQuery, isSearchMode]);
 
   const fetchPosts = async () => {
     try {
+      if (loading) {
+        console.log('⚠️ FetchPosts called while already loading, skipping...');
+        return;
+      }
       setLoading(true);
+      
+      // Build parameters object
+      const params = {
+        limit: 1000
+      };
+      
+      // Add search parameter only when search query exists
+      if (searchQuery && searchQuery.trim() !== '') {
+        params.search = searchQuery.trim();
+        setIsSearchMode(true);
+        console.log('🔍 Frontend: Searching for:', params.search);
+      } else {
+        setIsSearchMode(false);
+        console.log('🔄 Frontend: Loading all posts (no search)');
+      }
+      
+      if (filterType && filterType !== "all") {
+        params.post_type = filterType;
+      }
+      
+      console.log('📤 Frontend: API request params:', params);
+      
       const response = await axios.get("/api/posts", {
         headers: { Authorization: `Bearer ${token}` },
-        params: {
-          search: searchQuery,
-          post_type: filterType === "all" ? undefined : filterType,
-          limit: 1000, // Request all posts
-        },
+        params,
       });
 
-      setPosts(response.data.data || []);
+      const postsData = response.data.data || [];
+      console.log(`✅ Frontend: Received ${postsData.length} posts from API`);
+      
+      if (searchQuery && searchQuery.trim() !== '') {
+        console.log('📝 Frontend: Search results titles:', postsData.map(p => p.title));
+        console.log('✨ Frontend: Setting posts state with FILTERED results');
+      } else {
+        console.log('📋 Frontend: Setting posts state with ALL posts');
+      }
+      
+      console.log(`🎯 Frontend: About to setPosts with ${postsData.length} posts`);
+      setPosts(postsData);
+      console.log('✅ Frontend: Posts state has been updated');
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("❌ Error fetching posts:", error);
       console.error("Error details:", error.response?.data);
+      setPosts([]); // Clear posts on error
     } finally {
       setLoading(false);
     }
@@ -98,7 +151,8 @@ const Discover = () => {
       reset();
       setSkillsToLearn([]);
       setSkillsToTeach([]);
-      fetchPosts(); // Refresh posts
+      console.log('📝 Post created successfully, refreshing posts with current search:', searchQuery);
+      fetchPosts(); // Refresh posts - will respect current search state
     } catch (error) {
       console.error("Error creating post:", error);
       alert("Failed to create post. Please try again.");
@@ -108,7 +162,57 @@ const Discover = () => {
   };
 
   const handleSearch = () => {
+    console.log('🔍 Search triggered with query:', searchQuery);
+    if (!searchQuery || searchQuery.trim() === '') {
+      console.log('⚠️ Warning: Search called with empty query');
+      return;
+    }
+    console.log('🚀 Calling fetchPosts for search...');
     fetchPosts();
+  };
+
+  const handleClearSearch = async () => {
+    console.log('🗑️ Clearing search');
+    
+    // Reset all search-related state
+    setSearchQuery('');
+    setFilterType('all');
+    setIsSearchMode(false);
+    
+    // Directly fetch all posts without search parameters
+    try {
+      if (loading) {
+        console.log('⚠️ Clear search called while already loading, skipping...');
+        return;
+      }
+      
+      setLoading(true);
+      console.log('🔄 Clear: Loading all posts (no search)');
+      
+      const params = {
+        limit: 1000
+      };
+      
+      console.log('📤 Clear: API request params:', params);
+      
+      const response = await axios.get("/api/posts", {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+      });
+
+      const postsData = response.data.data || [];
+      console.log(`✅ Clear: Received ${postsData.length} posts from API`);
+      console.log('📋 Clear: Setting posts state with ALL posts');
+      
+      setPosts(postsData);
+      console.log('✅ Clear: Posts state has been updated');
+      
+    } catch (error) {
+      console.error("❌ Error clearing search:", error);
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const viewProfile = (userId) => {
@@ -166,33 +270,41 @@ const Discover = () => {
         {/* Search and Filters */}
         <div className="bg-gray-900/60 backdrop-blur-sm rounded-lg shadow-lg border border-gray-700/50 p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Search posts by title, skills, or description..."
-                className="w-full px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                className="w-full px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400 pr-10"
               />
+              {(searchQuery || isSearchMode) && (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  title="Clear search"
+                >
+                  ×
+                </button>
+              )}
             </div>
-            {/* <div>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+            <div className="flex gap-2">
+              <button
+                onClick={handleSearch}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
               >
-                <option value="all">All Posts</option>
-                <option value="exchange">Skill Exchange</option>
-                <option value="teach">Teaching</option>
-                <option value="learn">Learning</option>
-              </select>
-            </div> */}
-            <button
-              onClick={handleSearch}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-            >
-              Search
-            </button>
+                Search
+              </button>
+              {(searchQuery || isSearchMode) && (
+                <button
+                  onClick={handleClearSearch}
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-300"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -204,19 +316,24 @@ const Discover = () => {
             </div>
           ) : posts.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <div className="text-6xl mb-4">📝</div>
+              <div className="text-6xl mb-4">{isSearchMode ? '🔍' : '📝'}</div>
               <h3 className="text-xl font-semibold text-white mb-2">
-                No posts found
+                {isSearchMode ? 'No results found' : 'No posts found'}
               </h3>
               <p className="text-gray-300 mb-4">
-                Be the first to create a skill exchange post!
+                {isSearchMode 
+                  ? `No posts found matching "${searchQuery}". Try a different search term.`
+                  : 'Be the first to create a skill exchange post!'
+                }
               </p>
-              <button
-                onClick={handleCreatePostClick}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-              >
-                Create Your First Post
-              </button>
+              {!isSearchMode && (
+                <button
+                  onClick={handleCreatePostClick}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                >
+                  Create Your First Post
+                </button>
+              )}
             </div>
           ) : (
             posts.map((post, index) => (

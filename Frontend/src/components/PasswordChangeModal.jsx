@@ -21,10 +21,9 @@ const PasswordChangeModal = ({ isOpen, onClose }) => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await axios.put('/api/users/change-password', {
+      await axios.put('/api/users/password', {
         currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-        confirmPassword: data.confirmPassword
+        newPassword: data.newPassword
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });

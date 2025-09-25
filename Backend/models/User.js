@@ -207,14 +207,24 @@ const User = sequelize.define('User', {
   hooks: {
     beforeCreate: async (user) => {
       if (user.password) {
-        const salt = await bcrypt.genSalt(12);
-        user.password = await bcrypt.hash(user.password, salt);
+        try {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        } catch (error) {
+          console.error('Password hashing error on create:', error);
+          throw error;
+        }
       }
     },
     beforeUpdate: async (user) => {
       if (user.changed('password')) {
-        const salt = await bcrypt.genSalt(12);
-        user.password = await bcrypt.hash(user.password, salt);
+        try {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        } catch (error) {
+          console.error('Password hashing error on update:', error);
+          throw error;
+        }
       }
     }
   }
@@ -222,9 +232,16 @@ const User = sequelize.define('User', {
 
 // Instance methods
 User.prototype.comparePassword = async function (candidatePassword) {
-
-        
-  return await bcrypt.compare(candidatePassword, this.password);
+  try {
+    if (!this.password) {
+      console.error('Password field is missing from user instance');
+      return false;
+    }
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error('Password comparison error:', error);
+    return false;
+  }
 };
 
 User.prototype.toJSON = function () {

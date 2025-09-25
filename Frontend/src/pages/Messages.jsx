@@ -1,56 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { formatDate, getRelativeTime } from '../utils/dateUtils';
-import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { formatDate, getRelativeTime } from "../utils/dateUtils";
+import OnlineStatusIndicator from "../components/OnlineStatusIndicator";
 
 const Messages = () => {
   const { token } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-
-
   // Fetch all conversations
   const fetchConversations = async () => {
     try {
-      const response = await axios.get('/api/messages/conversations', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get("/api/messages/conversations", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setConversations(response.data.data);
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      console.error("Error fetching conversations:", error);
     }
   };
 
   // Fetch messages for a specific conversation
   const fetchMessages = async (partnerId) => {
     try {
-      const response = await axios.get(`/api/messages/conversation/${partnerId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `/api/messages/conversation/${partnerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setMessages(response.data.data.messages);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error("Error fetching messages:", error);
     }
   };
 
   // Fetch unread count
   const fetchUnreadCount = async () => {
     try {
-      const response = await axios.get('/api/messages/unread-count', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get("/api/messages/unread-count", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setUnreadCount(response.data.data.unreadCount);
     } catch (error) {
-      console.error('Error fetching unread count:', error);
+      console.error("Error fetching unread count:", error);
     }
   };
 
@@ -61,23 +63,30 @@ const Messages = () => {
 
     setSendingMessage(true);
     try {
-      await axios.post('/api/messages', {
-        receiverId: selectedConversation.partner.id,
-        content: newMessage.trim(),
-        messageType: 'text'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(
+        "/api/messages",
+        {
+          receiverId: selectedConversation.partner.id,
+          content: newMessage.trim(),
+          messageType: "text",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      setNewMessage('');
+      setNewMessage("");
       // Refresh messages and conversations
       await Promise.all([
         fetchMessages(selectedConversation.partner.id),
-        fetchConversations()
+        fetchConversations(),
       ]);
     } catch (error) {
-      console.error('Error sending message:', error);
-      alert(error.response?.data?.message || 'Failed to send message. Please try again.');
+      console.error("Error sending message:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to send message. Please try again."
+      );
     } finally {
       setSendingMessage(false);
     }
@@ -86,13 +95,17 @@ const Messages = () => {
   // Mark messages as read
   const markAsRead = async (senderId) => {
     try {
-      await axios.put('/api/messages/mark-read', {
-        senderId
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.put(
+        "/api/messages/mark-read",
+        {
+          senderId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      console.error("Error marking messages as read:", error);
     }
   };
 
@@ -109,13 +122,15 @@ const Messages = () => {
     }
   };
 
+  // Navigate to user profile
+  const handleViewProfile = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([
-        fetchConversations(),
-        fetchUnreadCount()
-      ]);
+      await Promise.all([fetchConversations(), fetchUnreadCount()]);
       setLoading(false);
     };
 
@@ -127,8 +142,8 @@ const Messages = () => {
     const openConversationWith = location.state?.openConversationWith;
     if (openConversationWith && !loading) {
       // Find existing conversation with this user
-      const existingConversation = conversations.find(conv =>
-        conv.partner.id === parseInt(openConversationWith.id)
+      const existingConversation = conversations.find(
+        (conv) => conv.partner.id === parseInt(openConversationWith.id)
       );
 
       if (existingConversation) {
@@ -141,10 +156,10 @@ const Messages = () => {
           partner: {
             id: parseInt(openConversationWith.id),
             full_name: openConversationWith.full_name,
-            profile_picture: openConversationWith.profile_picture
+            profile_picture: openConversationWith.profile_picture,
           },
           lastMessage: null,
-          unreadCount: 0
+          unreadCount: 0,
         };
         setSelectedConversation(newConversation);
         setMessages([]); // Start with empty messages
@@ -188,40 +203,63 @@ const Messages = () => {
                 {conversations.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
                     <p>No conversations yet.</p>
-                    <p className="text-sm mt-2">Connect with other users to start messaging!</p>
+                    <p className="text-sm mt-2">
+                      Connect with other users to start messaging!
+                    </p>
                   </div>
                 ) : (
                   conversations.map((conversation) => (
                     <div
                       key={conversation.partner.id}
                       onClick={() => selectConversation(conversation)}
-                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${selectedConversation?.partner.id === conversation.partner.id ? 'bg-blue-50 border-blue-200' : ''
-                        }`}
+                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                        selectedConversation?.partner.id ===
+                        conversation.partner.id
+                          ? "bg-blue-50 border-blue-200"
+                          : ""
+                      }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 relative">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProfile(conversation.partner.id);
+                          }}
+                          className="flex-shrink-0 relative hover:opacity-80 transition-opacity"
+                          title="Click to view profile"
+                        >
                           {conversation.partner.profile_picture ? (
                             <img
                               src={conversation.partner.profile_picture}
                               alt={conversation.partner.full_name}
-                              className="w-10 h-10 rounded-full object-cover"
+                              className="w-10 h-10 rounded-full object-cover cursor-pointer"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer">
                               <span className="text-gray-600 font-medium">
-                                {conversation.partner.full_name?.charAt(0) || '?'}
+                                {conversation.partner.full_name?.charAt(0) ||
+                                  "?"}
                               </span>
                             </div>
                           )}
                           <div className="absolute -bottom-0.5 -right-0.5">
-                            <OnlineStatusIndicator isOnline={conversation.partner.is_online} />
+                            <OnlineStatusIndicator
+                              isOnline={conversation.partner.is_online}
+                            />
                           </div>
-                        </div>
+                        </button>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewProfile(conversation.partner.id);
+                              }}
+                              className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors truncate text-left cursor-pointer hover:underline"
+                              title="Click to view profile"
+                            >
                               {conversation.partner.full_name}
-                            </p>
+                            </button>
                             {conversation.unreadCount > 0 && (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 {conversation.unreadCount}
@@ -229,10 +267,13 @@ const Messages = () => {
                             )}
                           </div>
                           <p className="text-sm text-gray-500 truncate">
-                            {conversation.lastMessage?.content || 'No messages yet'}
+                            {conversation.lastMessage?.content ||
+                              "No messages yet"}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {getRelativeTime(conversation.lastMessage?.created_at)}
+                            {getRelativeTime(
+                              conversation.lastMessage?.created_at
+                            )}
                           </p>
                         </div>
                       </div>
@@ -249,32 +290,52 @@ const Messages = () => {
                   {/* Chat Header */}
                   <div className="p-4 border-b border-gray-200 bg-white">
                     <div className="flex items-center space-x-3">
-                      <div className="relative">
+                      <button
+                        onClick={() =>
+                          handleViewProfile(selectedConversation.partner.id)
+                        }
+                        className="relative hover:opacity-80 transition-opacity"
+                        title="Click to view profile"
+                      >
                         {selectedConversation.partner.profile_picture ? (
                           <img
                             src={selectedConversation.partner.profile_picture}
                             alt={selectedConversation.partner.full_name}
-                            className="w-10 h-10 rounded-full object-cover"
+                            className="w-10 h-10 rounded-full object-cover cursor-pointer"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer">
                             <span className="text-gray-600 font-medium">
-                              {selectedConversation.partner.full_name?.charAt(0) || '?'}
+                              {selectedConversation.partner.full_name?.charAt(
+                                0
+                              ) || "?"}
                             </span>
                           </div>
                         )}
                         <div className="absolute -bottom-0.5 -right-0.5">
-                          <OnlineStatusIndicator isOnline={selectedConversation.partner.is_online} />
+                          <OnlineStatusIndicator
+                            isOnline={selectedConversation.partner.is_online}
+                          />
                         </div>
-                      </div>
+                      </button>
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <button
+                          onClick={() =>
+                            handleViewProfile(selectedConversation.partner.id)
+                          }
+                          className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors text-left cursor-pointer hover:underline"
+                          title="Click to view profile"
+                        >
                           {selectedConversation.partner.full_name}
-                        </h3>
+                        </button>
                         <div className="flex items-center space-x-1">
-                          <OnlineStatusIndicator isOnline={selectedConversation.partner.is_online} />
+                          <OnlineStatusIndicator
+                            isOnline={selectedConversation.partner.is_online}
+                          />
                           <span className="text-sm text-gray-500">
-                            {selectedConversation.partner.is_online ? 'Online' : 'Offline'}
+                            {selectedConversation.partner.is_online
+                              ? "Online"
+                              : "Offline"}
                           </span>
                         </div>
                       </div>
@@ -291,18 +352,31 @@ const Messages = () => {
                       messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`flex ${message.sender_id === selectedConversation.partner.id ? 'justify-start' : 'justify-end'}`}
+                          className={`flex ${
+                            message.sender_id ===
+                            selectedConversation.partner.id
+                              ? "justify-start"
+                              : "justify-end"
+                          }`}
                         >
                           <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.sender_id === selectedConversation.partner.id
-                              ? 'bg-gray-200 text-gray-900'
-                              : 'bg-blue-600 text-white'
-                              }`}
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                              message.sender_id ===
+                              selectedConversation.partner.id
+                                ? "bg-gray-200 text-gray-900"
+                                : "bg-blue-600 text-white"
+                            }`}
                           >
                             <p className="text-sm">{message.content}</p>
-                            <p className={`text-xs mt-1 ${message.sender_id === selectedConversation.partner.id ? 'text-gray-500' : 'text-blue-100'
-                              }`}>
-                              {formatDate(message.created_at, 'time')}
+                            <p
+                              className={`text-xs mt-1 ${
+                                message.sender_id ===
+                                selectedConversation.partner.id
+                                  ? "text-gray-500"
+                                  : "text-blue-100"
+                              }`}
+                            >
+                              {formatDate(message.created_at, "time")}
                             </p>
                           </div>
                         </div>
@@ -326,7 +400,7 @@ const Messages = () => {
                         disabled={sendingMessage || !newMessage.trim()}
                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
                       >
-                        {sendingMessage ? 'Sending...' : 'Send'}
+                        {sendingMessage ? "Sending..." : "Send"}
                       </button>
                     </form>
                   </div>
@@ -334,10 +408,22 @@ const Messages = () => {
               ) : (
                 <div className="flex-1 flex items-center justify-center text-gray-500">
                   <div className="text-center">
-                    <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <svg
+                      className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
                     </svg>
-                    <p className="text-lg">Select a conversation to start messaging</p>
+                    <p className="text-lg">
+                      Select a conversation to start messaging
+                    </p>
                   </div>
                 </div>
               )}

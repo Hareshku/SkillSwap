@@ -1,4 +1,4 @@
-import { Post, User, Skill } from '../models/index.js';
+import { Post, User, Skill, sequelize } from '../models/index.js';
 import { Op } from 'sequelize';
 
 // Create a new post
@@ -26,7 +26,9 @@ export const createPost = async (req, res) => {
       experience_level,
       availability,
       preferred_meeting_type: preferred_meeting_type || 'online',
-      status: 'active'
+      status: 'active',
+      is_approved: true, // Auto-approve for testing
+      approved_at: new Date()
     });
 
     // Fetch the created post with user details
@@ -58,39 +60,61 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 1000; // Show all posts by default
+    const limit = parseInt(req.query.limit) || 1000;
     const offset = (page - 1) * limit;
     const { skills, post_type, search } = req.query;
 
-    let whereClause = {
+    console.log('🔍 Search API called with params:', { search, post_type, skills });
+
+    // Base conditions that always apply
+    const baseConditions = {
       status: 'active',
       is_approved: true
     };
 
-    // Add search filter
-    if (search) {
-      whereClause[Op.or] = [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
-        { skills_to_learn: { [Op.contains]: [search] } },
-        { skills_to_teach: { [Op.contains]: [search] } }
-      ];
+    let whereClause = { ...baseConditions };
+
+    // Handle search functionality
+    if (search && String(search).trim() !== '') {
+      const searchTerm = String(search).trim();
+      console.log('🔍 Performing search for term:', searchTerm);
+
+      // Use simple OR logic for search across multiple fields
+      whereClause = {
+        ...baseConditions,
+        [Op.or]: [
+          // Search in title (case insensitive)
+          sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('title')),
+            'LIKE',
+            `%${searchTerm.toLowerCase()}%`
+          ),
+          // Search in description (case insensitive)
+          sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('description')),
+            'LIKE',
+            `%${searchTerm.toLowerCase()}%`
+          ),
+          // Search in skills_to_learn JSON array
+          sequelize.where(
+            sequelize.fn('JSON_SEARCH', sequelize.col('skills_to_learn'), 'one', `%${searchTerm}%`),
+            'IS NOT NULL'
+          ),
+          // Search in skills_to_teach JSON array
+          sequelize.where(
+            sequelize.fn('JSON_SEARCH', sequelize.col('skills_to_teach'), 'one', `%${searchTerm}%`),
+            'IS NOT NULL'
+          )
+        ]
+      };
     }
 
-    // Add post type filter
-    if (post_type) {
+    // Add post type filter if specified
+    if (post_type && post_type !== 'all') {
       whereClause.post_type = post_type;
     }
 
-    // Add skills filter
-    if (skills) {
-      const skillArray = skills.split(',');
-      whereClause[Op.or] = [
-        ...(whereClause[Op.or] || []),
-        { skills_to_learn: { [Op.overlap]: skillArray } },
-        { skills_to_teach: { [Op.overlap]: skillArray } }
-      ];
-    }
+    console.log('📋 Final whereClause:', JSON.stringify(whereClause, null, 2));
 
     const posts = await Post.findAndCountAll({
       where: whereClause,
@@ -103,10 +127,25 @@ export const getAllPosts = async (req, res) => {
       ],
       limit,
       offset,
-      order: [['created_at', 'DESC']]
+      order: [
+        // Online users first, then by creation date
+        [{ model: User, as: 'author' }, 'is_online', 'DESC'],
+        ['created_at', 'DESC']
+      ],
+      // Enable SQL logging for debugging
+      logging: console.log
     });
 
-
+    console.log(`✅ Search completed. Found ${posts.count} posts, returning ${posts.rows.length} posts`);
+    
+    if (search && search.trim() !== '') {
+      console.log('📝 Matching posts:', posts.rows.map(p => ({ 
+        id: p.id, 
+        title: p.title,
+        skills_to_learn: p.skills_to_learn,
+        skills_to_teach: p.skills_to_teach
+      })));
+    }
 
     res.json({
       success: true,
@@ -119,10 +158,11 @@ export const getAllPosts = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get all posts error:', error);
+    console.error('❌ Get all posts error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch posts'
+      message: 'Failed to fetch posts',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };

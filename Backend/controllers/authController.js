@@ -89,128 +89,106 @@ export const register = async (req, res) => {
   }
 };
 
-// Generic login function
-const performLogin = async (email, password, requiredRole = null) => {
-  // Find user by email
-  const user = await User.findOne({
-    where: { email },
-    attributes: { include: ['password'] }
-  });
-
-  console.log("Testing the admin login ======",user);
-  if (!user) {
-    throw new Error('Invalid email ');
-  }
-
-  // Check if account is active
-  if (!user.is_active) {
-    throw new Error('Account is deactivated. Please contact support.');
-  }
-
-  // Check role if specified
-  if (requiredRole && user.role !== requiredRole) {
-    throw new Error(`Access denied. This login is for ${requiredRole}s only.`);
-  }
-
-  // Verify password
-  const isPasswordValid = await user.comparePassword(password);
-  if (!isPasswordValid) {
-    throw new Error('Invalid password');
-  }
-
-  // Generate tokens
-  const token = generateToken({
-    userId: user.id,
-    email: user.email,
-    role: user.role
-  });
-
-  const refreshToken = generateRefreshToken({
-    userId: user.id,
-    email: user.email
-  });
-
-  // Update last login and set online status
-  await user.update({
-    last_login: new Date(),
-    is_online: true,
-    last_seen: new Date()
-  });
-
-  return {
-    user: user.toJSON(),
-    token,
-    refreshToken
-  };
-};
-
-// Login user (general login - supports both users and admins)
+// Single unified login function
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
-    const result = await performLogin(email, password);
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    // Find user by email with password included
+    const user = await User.findOne({
+      where: { email: email.toLowerCase().trim() },
+      attributes: { include: ['password'] }
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if account is active
+    if (!user.is_active) {
+      return res.status(401).json({
+        success: false,
+        message: 'Account is deactivated. Please contact support.'
+      });
+    }
+
+    // Check role if specified
+    if (role && user.role !== role) {
+      return res.status(401).json({
+        success: false,
+        message: `Access denied. This login is for ${role}s only.`
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid password'
+      });
+    }
+
+    // Generate tokens
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role
+    });
+
+    const refreshToken = generateRefreshToken({
+      userId: user.id,
+      email: user.email
+    });
+
+    // Update last login and set online status
+    await user.update({
+      last_login: new Date(),
+      is_online: true,
+      last_seen: new Date()
+    });
 
     res.status(200).json({
       success: true,
       message: 'Login successful',
-      data: result
+      data: {
+        user: user.toJSON(),
+        token,
+        refreshToken
+      }
     });
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(401).json({
+    res.status(500).json({
       success: false,
-      message: error.message || 'Login failed',
+      message: 'Internal server error',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
 
-// Login user (role-specific for regular users)
+// User-specific login (backward compatibility)
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const result = await performLogin(email, password, 'user');
-
-    res.status(200).json({
-      success: true,
-      message: 'User login successful',
-      data: result
-    });
-
-  } catch (error) {
-    console.error('User login error:', error);
-    res.status(401).json({
-      success: false,
-      message: error.message || 'User login failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
+  req.body.role = 'user';
+  return login(req, res);
 };
 
-// Login admin (role-specific for admins)
+// Admin-specific login (backward compatibility)
 export const loginAdmin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const result = await performLogin(email, password, 'admin');
-
-    res.status(200).json({
-      success: true,
-      message: 'Admin login successful',
-      data: result
-    });
-
-  } catch (error) {
-    console.error('Admin login error:', error);
-    res.status(401).json({
-      success: false,
-      message: error.message || 'Admin login failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
+  req.body.role = 'admin';
+  return login(req, res);
 };
 
 // Get current user profile

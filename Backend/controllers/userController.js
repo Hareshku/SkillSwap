@@ -1,5 +1,4 @@
 import { User, Post, Skill, Badge, UserSkill } from '../models/index.js';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
@@ -13,7 +12,10 @@ export const getUserProfile = async (req, res) => {
       include: [
         {
           model: Skill,
-          as: 'skills'
+          as: 'skills',
+          through: {
+            attributes: ['proficiency_level', 'can_teach', 'wants_to_learn', 'years_of_experience']
+          }
         },
         {
           model: Badge,
@@ -55,20 +57,31 @@ export const updateUserProfile = async (req, res) => {
     console.log('Update profile request for user:', userId);
     console.log('Request body:', req.body);
 
-    const {
-      full_name,
-      bio,
-      linkedin_url,
-      github_url,
-      portfolio_url,
-      profession,
-      degree_level,
-      institute,
-      state,
-      country,
-      timezone,
-      skills
-    } = req.body;
+  let {
+    full_name,
+    bio,
+    linkedin_url,
+    github_url,
+    portfolio_url,
+    profession,
+    degree_level,
+    institute,
+    state,
+    country,
+    timezone,
+    skills,
+    username
+  } = req.body;
+
+  // Parse skills if it's a string (from FormData)
+  if (typeof skills === 'string') {
+    try {
+      skills = JSON.parse(skills);
+    } catch (error) {
+      console.error('Error parsing skills JSON:', error);
+      skills = [];
+    }
+  }
 
     // Update user basic info
     const user = await User.findByPk(userId);
@@ -82,6 +95,7 @@ export const updateUserProfile = async (req, res) => {
 
     // Handle profile picture upload
     const updateData = {
+      username,
       full_name,
       bio,
       linkedin_url,
@@ -95,75 +109,135 @@ export const updateUserProfile = async (req, res) => {
       timezone
     };
 
-    // Remove undefined values
+    // Check for username uniqueness if username is being updated
+    if (username && username !== user.username) {
+      const existingUser = await User.findOne({ 
+        where: { 
+          username: username,
+          id: { [Op.ne]: userId }
+        } 
+      });
+      
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Username is already taken'
+        });
+      }
+    }
+
+    // Remove undefined values and handle empty strings for ENUM fields
     Object.keys(updateData).forEach(key => {
       if (updateData[key] === undefined) {
         delete updateData[key];
       }
+      // Handle empty strings for ENUM fields that should be null
+      if (key === 'degree_level' || key === 'profession') {
+        if (updateData[key] === '' || updateData[key] === null) {
+          updateData[key] = null;
+        }
+      }
+      // Handle empty strings for URL fields
+      if (key === 'linkedin_url' || key === 'github_url' || key === 'portfolio_url') {
+        if (updateData[key] === '') {
+          updateData[key] = null;
+        }
+      }
     });
 
-    // Add profile picture if uploaded
+    // Add profile picture if uploaded (from file upload or form data)
     if (req.file) {
       updateData.profile_picture = `/uploads/${req.file.filename}`;
+    } else if (req.files && req.files.profile_picture) {
+      updateData.profile_picture = `/uploads/${req.files.profile_picture[0].filename}`;
     }
 
     console.log('Updating user with data:', updateData);
-    await user.update(updateData);
-    console.log('User basic info updated successfully');
+    try {
+      await user.update(updateData);
+      console.log('User basic info updated successfully');
+    } catch (userUpdateError) {
+      console.error('Error updating user basic info:', userUpdateError);
+      throw new Error(`Failed to update user profile: ${userUpdateError.message}`);
+    }
 
     // Update skills if provided
     if (skills && Array.isArray(skills)) {
       console.log('Processing skills:', skills);
+      
+      try {
+        // Remove existing user skills
+        const deletedCount = await UserSkill.destroy({ where: { user_id: userId } });
+        console.log(`Deleted ${deletedCount} existing user skills`);
 
-      // Remove existing user skills
-      await UserSkill.destroy({ where: { user_id: userId } });
+        // Add new skills
+        if (skills.length > 0) {
+          const skillPromises = skills.map(async (skill) => {
+            try {
+              console.log('Processing skill:', skill);
 
-      // Add new skills
-      if (skills.length > 0) {
-        const skillPromises = skills.map(async (skill) => {
-          try {
-            console.log('Processing skill:', skill);
+              // Validate skill data
+              if (!skill.skill_name || typeof skill.skill_name !== 'string' || skill.skill_name.trim() === '') {
+                console.warn('Invalid skill name:', skill);
+                return null;
+              }
 
-            // Validate skill data
-            if (!skill.skill_name || typeof skill.skill_name !== 'string') {
-              console.warn('Invalid skill name:', skill);
+              const cleanSkillName = skill.skill_name.trim();
+              const skillType = skill.skill_type || 'learn';
+              const proficiencyLevel = skill.proficiency_level || 'beginner';
+
+              // Validate proficiency level
+              if (!['beginner', 'intermediate', 'advanced', 'expert'].includes(proficiencyLevel)) {
+                console.warn('Invalid proficiency level, defaulting to beginner:', proficiencyLevel);
+              }
+
+              // First, find or create the skill in the skills table
+              let skillRecord = await Skill.findOne({ 
+                where: { name: cleanSkillName }
+              });
+
+              if (!skillRecord) {
+                // Create new skill if it doesn't exist
+                skillRecord = await Skill.create({
+                  name: cleanSkillName,
+                  category: skillType === 'teach' ? 'teaching' : 'learning',
+                  is_approved: true,
+                  created_by: userId
+                });
+                console.log('Created new skill:', skillRecord.name);
+              }
+
+              // Create user-skill relationship
+              const userSkillData = {
+                user_id: userId,
+                skill_id: skillRecord.id,
+                proficiency_level: ['beginner', 'intermediate', 'advanced', 'expert'].includes(proficiencyLevel) ? proficiencyLevel : 'beginner',
+                can_teach: skillType === 'teach',
+                wants_to_learn: skillType === 'learn'
+              };
+
+              const userSkill = await UserSkill.create(userSkillData);
+              console.log('Created user-skill relationship:', userSkill.id);
+              return userSkill;
+            } catch (skillError) {
+              console.error('Error processing individual skill:', skill, skillError);
               return null;
             }
+          });
 
-            // First, find or create the skill in the skills table
-            let skillRecord = await Skill.findOne({ where: { name: skill.skill_name } });
-
-            if (!skillRecord) {
-              // Create new skill if it doesn't exist
-              skillRecord = await Skill.create({
-                name: skill.skill_name,
-                category: skill.skill_type || 'general', // Use skill_type as category
-                is_approved: true,
-                created_by: userId
-              });
-              console.log('Created new skill:', skillRecord.name);
-            }
-
-            // Create user-skill relationship
-            const userSkill = await UserSkill.create({
-              user_id: userId,
-              skill_id: skillRecord.id,
-              proficiency_level: skill.proficiency_level || 'beginner',
-              can_teach: skill.skill_type === 'teach',
-              wants_to_learn: skill.skill_type === 'learn'
-            });
-
-            console.log('Created user-skill relationship:', userSkill.id);
-            return userSkill;
-          } catch (skillError) {
-            console.error('Error processing skill:', skill, skillError);
-            return null;
+          const results = await Promise.allSettled(skillPromises);
+          const successfulSkills = results.filter(result => result.status === 'fulfilled' && result.value !== null);
+          console.log(`Successfully processed ${successfulSkills.length} out of ${skills.length} skills`);
+          
+          // Log any failed skills
+          const failedSkills = results.filter(result => result.status === 'rejected' || result.value === null);
+          if (failedSkills.length > 0) {
+            console.warn('Failed to process some skills:', failedSkills);
           }
-        });
-
-        const results = await Promise.all(skillPromises);
-        const successfulSkills = results.filter(result => result !== null);
-        console.log(`Successfully processed ${successfulSkills.length} out of ${skills.length} skills`);
+        }
+      } catch (skillsError) {
+        console.error('Error processing skills:', skillsError);
+        throw new Error(`Failed to update skills: ${skillsError.message}`);
       }
     }
 
@@ -242,7 +316,11 @@ export const changePassword = async (req, res) => {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
-    const user = await User.findByPk(userId);
+    // Get user with password included
+    const user = await User.findByPk(userId, {
+      attributes: { include: ['password'] }
+    });
+    
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -251,7 +329,8 @@ export const changePassword = async (req, res) => {
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
         success: false,
@@ -259,12 +338,8 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    // Hash new password
-    const saltRounds = 12;
-    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
-
-    // Update password
-    await user.update({ password: hashedNewPassword });
+    // Update password - let the model's beforeUpdate hook handle hashing
+    await user.update({ password: newPassword });
 
     res.json({
       success: true,
@@ -274,7 +349,8 @@ export const changePassword = async (req, res) => {
     console.error('Change password error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to change password'
+      message: 'Failed to change password',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

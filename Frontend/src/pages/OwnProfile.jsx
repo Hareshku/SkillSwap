@@ -296,6 +296,8 @@ const OwnProfile = () => {
   const [pendingMeetings, setPendingMeetings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const {
     register,
@@ -313,8 +315,21 @@ const OwnProfile = () => {
           const response = await axios.get(`/api/users/profile/${user.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setProfileData(response.data.data);
-          setSkills(response.data.data.skills || []);
+          const profileResponse = response.data.data;
+          setProfileData(profileResponse);
+
+          // Transform skills data from API format to frontend format
+          const transformedSkills = (profileResponse.skills || []).map(
+            (skill) => ({
+              id: skill.id,
+              skill_name: skill.name,
+              skill_type: skill.UserSkill?.can_teach ? "teach" : "learn",
+              proficiency_level:
+                skill.UserSkill?.proficiency_level || "beginner",
+            })
+          );
+
+          setSkills(transformedSkills);
 
           // Fetch user badges
           try {
@@ -419,19 +434,80 @@ const OwnProfile = () => {
       console.log("Submitting profile data:", data);
       console.log("Skills to submit:", skills);
 
+      // Prepare form data for multipart upload if image is selected
+      const formData = new FormData();
+
+      // Add profile data
       const profileData = {
         ...data,
         skills: skills,
       };
 
-      console.log("Final profile data:", profileData);
+      // Handle empty degree_level and profession
+      if (!profileData.degree_level || profileData.degree_level === "") {
+        profileData.degree_level = null;
+      }
+      if (!profileData.profession || profileData.profession === "") {
+        profileData.profession = null;
+      }
 
-      const response = await axios.put("/api/users/profile", profileData, {
-        headers: { Authorization: `Bearer ${token}` },
+      // Clean URL fields
+      ["linkedin_url", "github_url", "portfolio_url"].forEach((field) => {
+        if (profileData[field] === "") {
+          profileData[field] = null;
+        }
       });
 
+      console.log("Final profile data:", profileData);
+
+      // If image is selected, use FormData, otherwise use JSON
+      let response;
+      if (selectedImage) {
+        // Add profile picture
+        formData.append("profile_picture", selectedImage);
+
+        // Add other data as JSON string
+        Object.keys(profileData).forEach((key) => {
+          if (key === "skills") {
+            formData.append(key, JSON.stringify(profileData[key]));
+          } else {
+            formData.append(key, profileData[key] || "");
+          }
+        });
+
+        response = await axios.put("/api/users/profile", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        response = await axios.put("/api/users/profile", profileData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+
       console.log("Profile update response:", response.data);
-      setProfileData(response.data.data);
+      const updatedProfile = response.data.data;
+      setProfileData(updatedProfile);
+
+      // Transform skills data from API response
+      const transformedSkills = (updatedProfile.skills || []).map((skill) => ({
+        id: skill.id,
+        skill_name: skill.name,
+        skill_type: skill.UserSkill?.can_teach ? "teach" : "learn",
+        proficiency_level: skill.UserSkill?.proficiency_level || "beginner",
+      }));
+
+      setSkills(transformedSkills);
+
+      // Clear image selection after successful update
+      setSelectedImage(null);
+      setImagePreview(null);
+
       setIsEditing(false);
       alert("Profile updated successfully!");
     } catch (error) {
@@ -471,11 +547,55 @@ const OwnProfile = () => {
     setSkills(skills.filter((_, i) => i !== index));
   };
 
+  // Handle profile picture selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert("Image size should be less than 5MB");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image file");
+        return;
+      }
+
+      setSelectedImage(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove selected image
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     reset();
+
+    // Clear image selection
+    setSelectedImage(null);
+    setImagePreview(null);
+
+    // Reset skills to original state
     if (profileData && profileData.skills) {
-      setSkills(profileData.skills);
+      const originalSkills = profileData.skills.map((skill) => ({
+        id: skill.id,
+        skill_name: skill.name,
+        skill_type: skill.UserSkill?.can_teach ? "teach" : "learn",
+        proficiency_level: skill.UserSkill?.proficiency_level || "beginner",
+      }));
+      setSkills(originalSkills);
     }
   };
 
@@ -491,6 +611,13 @@ const OwnProfile = () => {
   }
 
   const displayData = profileData || user;
+
+  // Debug logging
+  console.log("=== OwnProfile Debug Info ===");
+  console.log("user from context:", user);
+  console.log("profileData from API:", profileData);
+  console.log("displayData (final):", displayData);
+  console.log("===========================");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -516,13 +643,16 @@ const OwnProfile = () => {
             {/* Profile Info */}
             <div className="text-white flex-1 text-center sm:text-left">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">
-                {displayData?.full_name || "User Name"}
+                {displayData?.full_name || displayData?.username || "User"}
               </h1>
               <p className="text-lg sm:text-xl opacity-90 mb-1">
-                {displayData?.profession || "student"}
+                {displayData?.profession
+                  ? displayData.profession.charAt(0).toUpperCase() +
+                    displayData.profession.slice(1)
+                  : "Add profession"}
               </p>
               <p className="text-base sm:text-lg opacity-80 mb-2 sm:mb-4">
-                {displayData?.institute || "MUET"}
+                {displayData?.institute || "Add institute"}
               </p>
             </div>
 
@@ -674,6 +804,104 @@ const OwnProfile = () => {
               <div className="flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
                 {/* Left Column - Bio and Skills */}
                 <div className="flex-1 space-y-4 sm:space-y-6">
+                  {/* Profile Picture Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Profile Picture
+                    </label>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-20 h-20 rounded-full border-4 border-gray-200 overflow-hidden bg-gray-100 flex-shrink-0">
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : displayData?.profile_picture ? (
+                          <img
+                            src={displayData.profile_picture}
+                            alt="Current profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-600">
+                            {displayData?.full_name?.charAt(0)?.toUpperCase() ||
+                              "U"}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          className="hidden"
+                          id="profile-picture-input"
+                        />
+                        <div className="flex space-x-2">
+                          <label
+                            htmlFor="profile-picture-input"
+                            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                          >
+                            Choose Image
+                          </label>
+                          {(selectedImage || imagePreview) && (
+                            <button
+                              type="button"
+                              onClick={removeSelectedImage}
+                              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-sm"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Max file size: 5MB. Supported formats: JPEG, PNG, GIF
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Username */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Username
+                    </label>
+                    <input
+                      {...register("username", {
+                        required: "Username is required",
+                        minLength: {
+                          value: 3,
+                          message: "Username must be at least 3 characters",
+                        },
+                        pattern: {
+                          value: /^[a-zA-Z0-9_]+$/,
+                          message:
+                            "Username can only contain letters, numbers, and underscores",
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your username"
+                    />
+                    {errors.username && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.username.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      {...register("full_name")}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
                   {/* Bio */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -764,6 +992,23 @@ const OwnProfile = () => {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Profession
+                        </label>
+                        <select
+                          {...register("profession")}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select profession</option>
+                          <option value="student">Student</option>
+                          <option value="professional">Professional</option>
+                          <option value="freelancer">Freelancer</option>
+                          <option value="entrepreneur">Entrepreneur</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Location
                         </label>
                         <input
@@ -847,7 +1092,8 @@ const OwnProfile = () => {
                   </h2>
                   <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
                     <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                      {displayData?.bio || "Hi, I am Rohit kumar here"}
+                      {displayData?.bio ||
+                        "No bio added yet. Click 'Edit Profile' to add your bio!"}
                     </p>
                   </div>
                 </div>
@@ -908,8 +1154,13 @@ const OwnProfile = () => {
                           Location:
                         </span>
                         <p className="text-gray-900 text-sm sm:text-base">
-                          {displayData?.state || "Sindh"},{" "}
-                          {displayData?.country || "Pakistan"}
+                          {displayData?.state
+                            ? `${displayData.state}${
+                                displayData?.country
+                                  ? `, ${displayData.country}`
+                                  : ""
+                              }`
+                            : "Not specified"}
                         </p>
                       </div>
                       <div>
@@ -917,7 +1168,7 @@ const OwnProfile = () => {
                           Timezone:
                         </span>
                         <p className="text-gray-900 text-sm sm:text-base">
-                          {displayData?.timezone || "Asia/Karachi"}
+                          {displayData?.timezone || "Not specified"}
                         </p>
                       </div>
                       <div>
@@ -940,7 +1191,7 @@ const OwnProfile = () => {
                           Institute:
                         </span>
                         <p className="text-gray-900 text-sm sm:text-base">
-                          {displayData?.institute || "MUET"}
+                          {displayData?.institute || "Not specified"}
                         </p>
                       </div>
                       <div>
@@ -949,7 +1200,7 @@ const OwnProfile = () => {
                         </span>
                         <p className="text-gray-900 capitalize text-sm sm:text-base">
                           {displayData?.degree_level?.replace("_", " ") ||
-                            "High School"}
+                            "Not specified"}
                         </p>
                       </div>
                     </div>
