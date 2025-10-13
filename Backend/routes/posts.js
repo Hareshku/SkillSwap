@@ -10,7 +10,8 @@ import {
   getPost,
   updatePost,
   deletePost,
-  getRecommendedPosts
+  getRecommendedPosts,
+  getSearchSuggestions
 } from '../controllers/postController.js';
 
 const router = express.Router();
@@ -141,6 +142,17 @@ router.get('/',
     .withMessage('Search query must be a string'),
   validateRequest,
   getAllPosts
+);
+
+// Get search suggestions for skills
+router.get('/suggestions',
+  authenticateToken,
+  query('q')
+    .optional()
+    .isString()
+    .withMessage('Query parameter must be a string'),
+  validateRequest,
+  getSearchSuggestions
 );
 
 // Get recommended posts for current user

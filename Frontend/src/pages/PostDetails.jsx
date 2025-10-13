@@ -224,7 +224,7 @@ const PostDetails = () => {
                   {post.experience_level || 'Not specified'}
                 </p>
               </div>
-              
+
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2 flex items-center space-x-1">
                   <Globe className="w-4 h-4" />

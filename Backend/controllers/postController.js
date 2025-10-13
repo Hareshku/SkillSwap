@@ -64,7 +64,7 @@ export const getAllPosts = async (req, res) => {
     const offset = (page - 1) * limit;
     const { skills, post_type, search } = req.query;
 
-    console.log('🔍 Search API called with params:', { search, post_type, skills });
+    // Search API called
 
     // Base conditions that always apply
     const baseConditions = {
@@ -77,7 +77,6 @@ export const getAllPosts = async (req, res) => {
     // Handle search functionality
     if (search && String(search).trim() !== '') {
       const searchTerm = String(search).trim();
-      console.log('🔍 Performing search for term:', searchTerm);
 
       // Use simple OR logic for search across multiple fields
       whereClause = {
@@ -95,15 +94,15 @@ export const getAllPosts = async (req, res) => {
             'LIKE',
             `%${searchTerm.toLowerCase()}%`
           ),
-          // Search in skills_to_learn JSON array
+          // Search in skills_to_learn JSON array (case-insensitive)
           sequelize.where(
-            sequelize.fn('JSON_SEARCH', sequelize.col('skills_to_learn'), 'one', `%${searchTerm}%`),
-            'IS NOT NULL'
+            sequelize.fn('JSON_SEARCH', sequelize.fn('LOWER', sequelize.col('skills_to_learn')), 'one', `%${searchTerm.toLowerCase()}%`),
+            { [Op.ne]: null }
           ),
-          // Search in skills_to_teach JSON array
+          // Search in skills_to_teach JSON array (case-insensitive)
           sequelize.where(
-            sequelize.fn('JSON_SEARCH', sequelize.col('skills_to_teach'), 'one', `%${searchTerm}%`),
-            'IS NOT NULL'
+            sequelize.fn('JSON_SEARCH', sequelize.fn('LOWER', sequelize.col('skills_to_teach')), 'one', `%${searchTerm.toLowerCase()}%`),
+            { [Op.ne]: null }
           )
         ]
       };
@@ -114,7 +113,7 @@ export const getAllPosts = async (req, res) => {
       whereClause.post_type = post_type;
     }
 
-    console.log('📋 Final whereClause:', JSON.stringify(whereClause, null, 2));
+    // Execute search query
 
     const posts = await Post.findAndCountAll({
       where: whereClause,
@@ -131,21 +130,10 @@ export const getAllPosts = async (req, res) => {
         // Online users first, then by creation date
         [{ model: User, as: 'author' }, 'is_online', 'DESC'],
         ['created_at', 'DESC']
-      ],
-      // Enable SQL logging for debugging
-      logging: console.log
+      ]
     });
 
-    console.log(`✅ Search completed. Found ${posts.count} posts, returning ${posts.rows.length} posts`);
-    
-    if (search && search.trim() !== '') {
-      console.log('📝 Matching posts:', posts.rows.map(p => ({ 
-        id: p.id, 
-        title: p.title,
-        skills_to_learn: p.skills_to_learn,
-        skills_to_teach: p.skills_to_teach
-      })));
-    }
+    // Search completed successfully
 
     res.json({
       success: true,
@@ -435,6 +423,85 @@ export const getRecommendedPosts = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch recommended posts'
+    });
+  }
+};
+// Get search suggestions for skills
+export const getSearchSuggestions = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.trim().length === 0) {
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
+
+    const searchTerm = q.trim();
+
+    // Get all active posts and do case-insensitive filtering in JavaScript
+    // This is more reliable than trying to make MySQL JSON_SEARCH case-insensitive
+    const posts = await Post.findAll({
+      where: {
+        status: 'active'
+      },
+      attributes: ['skills_to_teach', 'skills_to_learn']
+    });
+
+    // Extract and flatten all skills
+    const allSkills = new Set();
+
+    posts.forEach(post => {
+      // Add skills from skills_to_teach
+      if (post.skills_to_teach && Array.isArray(post.skills_to_teach)) {
+        post.skills_to_teach.forEach(skill => {
+          if (skill.toLowerCase().includes(searchTerm.toLowerCase())) {
+            allSkills.add(skill);
+          }
+        });
+      }
+
+      // Add skills from skills_to_learn
+      if (post.skills_to_learn && Array.isArray(post.skills_to_learn)) {
+        post.skills_to_learn.forEach(skill => {
+          if (skill.toLowerCase().includes(searchTerm.toLowerCase())) {
+            allSkills.add(skill);
+          }
+        });
+      }
+    });
+
+    // Convert to array and sort by relevance (exact matches first, then partial matches)
+    const suggestions = Array.from(allSkills)
+      .sort((a, b) => {
+        const aLower = a.toLowerCase();
+        const bLower = b.toLowerCase();
+        const searchLower = searchTerm.toLowerCase();
+
+        // Exact matches first
+        if (aLower === searchLower && bLower !== searchLower) return -1;
+        if (bLower === searchLower && aLower !== searchLower) return 1;
+
+        // Starts with search term
+        if (aLower.startsWith(searchLower) && !bLower.startsWith(searchLower)) return -1;
+        if (bLower.startsWith(searchLower) && !aLower.startsWith(searchLower)) return 1;
+
+        // Alphabetical order
+        return a.localeCompare(b);
+      })
+      .slice(0, 10); // Limit to 10 suggestions
+
+    res.json({
+      success: true,
+      data: suggestions
+    });
+
+  } catch (error) {
+    console.error('Get search suggestions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get search suggestions'
     });
   }
 };
