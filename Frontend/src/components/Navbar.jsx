@@ -35,12 +35,16 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="w-[100%] mx-auto px-6 sm:px-8">
-        <div className="flex justify-between items-center h-[6rem]">
+        <div className="flex justify-between items-center h-[4rem]">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <div className="w-[2.5rem] h-[2.5rem] bg-black rounded-full">
-                <img src="./images/logo.png" alt="logo" class="rounded-full" />
+                <img
+                  src="./images/logo.png"
+                  alt="logo"
+                  className="rounded-full"
+                />
               </div>
             </Link>
           </div>
@@ -54,10 +58,11 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${isActive(link.path)
-                      ? "text-gray-900"
-                      : "text-gray-500 hover:text-gray-900"
-                      }`}
+                    className={`px-3 py-2 text-[1.2rem] leading-4 font-medium transition-colors duration-200 relative ${
+                      isActive(link.path)
+                        ? "text-gray-900"
+                        : "text-gray-500 hover:text-gray-900"
+                    }`}
                   >
                     {link.name}
                     {isActive(link.path) && (
@@ -74,10 +79,11 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${isActive(link.path)
-                      ? "text-gray-500"
-                      : "text-gray-500 hover:text-gray-900"
-                      }`}
+                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${
+                      isActive(link.path)
+                        ? "text-gray-500"
+                        : "text-gray-500 hover:text-gray-900"
+                    }`}
                   >
                     {link.name}
                     {isActive(link.path) && (
@@ -93,10 +99,11 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${isActive(link.path)
-                      ? "text-gray-900"
-                      : "text-gray-500 hover:text-gray-900"
-                      }`}
+                    className={`px-3 py-2 text-2xl font-medium transition-colors duration-200 relative ${
+                      isActive(link.path)
+                        ? "text-gray-900"
+                        : "text-gray-500 hover:text-gray-900"
+                    }`}
                   >
                     {link.name}
                     {isActive(link.path) && (
@@ -123,7 +130,7 @@ const Navbar = () => {
                     {/* Show Dashboard, User Profile, and Settings only for non-admin users */}
                     {user?.role !== "admin" && (
                       <>
-                        <Link
+                        {/* <Link
                           to="/dashboard"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                         >
@@ -137,7 +144,7 @@ const Navbar = () => {
                             </svg>
                           </div>
                           Dashboard
-                        </Link>
+                        </Link> */}
                         <Link
                           to="/profile"
                           className="flex items-center px-4 py-3 text-sm text-purple-600 hover:bg-gray-50 transition-colors duration-200"
@@ -157,7 +164,7 @@ const Navbar = () => {
                           </div>
                           User Profile
                         </Link>
-                        <Link
+                        {/* <Link
                           to="/settings"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                         >
@@ -175,7 +182,7 @@ const Navbar = () => {
                             </svg>
                           </div>
                           Settings
-                        </Link>
+                        </Link> */}
                         <div className="border-t border-gray-100 my-1"></div>
                       </>
                     )}
@@ -273,10 +280,11 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${isActive(link.path)
-                    ? "text-purple-600 bg-purple-50"
-                    : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
-                    }`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                    isActive(link.path)
+                      ? "text-purple-600 bg-purple-50"
+                      : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -291,10 +299,11 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${isActive(link.path)
-                    ? "text-purple-600 bg-purple-50"
-                    : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
-                    }`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                    isActive(link.path)
+                      ? "text-purple-600 bg-purple-50"
+                      : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -308,10 +317,11 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${isActive(link.path)
-                    ? "text-purple-600 bg-purple-50"
-                    : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
-                    }`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                    isActive(link.path)
+                      ? "text-purple-600 bg-purple-50"
+                      : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
+                  }`}
                 >
                   {link.name}
                 </Link>

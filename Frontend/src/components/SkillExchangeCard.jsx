@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { User, Code, Globe, Calendar, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import OnlineStatusIndicator from './OnlineStatusIndicator';
 
 const SkillExchangeCard = ({ post, onViewProfile }) => {
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
 
@@ -32,6 +34,29 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
     return name.charAt(0).toUpperCase();
   };
 
+  const getFirstLineDescription = (description) => {
+    if (!description) return '';
+    // Split by new lines and take the first line
+    const firstLine = description.split('\n')[0];
+    // If the first line is too long (more than 80 characters), truncate it
+    if (firstLine.length > 80) {
+      return firstLine.substring(0, 77) + '...';
+    }
+    return firstLine;
+  };
+
+  const shouldShowSeeMore = (description) => {
+    if (!description) return false;
+    const firstLine = description.split('\n')[0];
+    // Show "See More" if there are multiple lines OR if the first line was truncated
+    return description.split('\n').length > 1 || firstLine.length > 80;
+  };
+
+  const handleSeeMore = (e) => {
+    e.stopPropagation();
+    navigate(`/post/${post.id}`);
+  };
+
   return (
     <div
       className={`relative group transition-all duration-500 transform max-w-sm w-full ${isHovered ? 'scale-105' : 'hover:scale-102'
@@ -45,20 +70,8 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
           : 'scale(1)'
       }}
     >
-      {/* Glowing effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
-
       {/* Main card */}
-      <div className="relative bg-gradient-to-br from-gray-900/95 to-black/95 rounded-xl p-4 shadow-2xl border border-gray-700/50 backdrop-blur-sm">
-
-        {/* Mouse tracking gradient */}
-        <div
-          className={`absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 ${isHovered ? 'opacity-20' : ''
-            }`}
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(168,85,247,0.3), transparent 60%)`
-          }}
-        ></div>
+      <div className="relative bg-white rounded-xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
@@ -93,19 +106,17 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
             </div>
 
             <div>
-              <h2 className="text-lg font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+              <h2 className="text-lg font-bold text-gray-900">
                 {post.author?.full_name || post.author?.username}
               </h2>
-              <p className="text-gray-400 text-xs flex items-center space-x-1">
+              <p className="text-gray-600 text-xs flex items-center space-x-1">
                 <User className="w-2.5 h-2.5" />
-                <span>{post.author?.profession || 'student'}</span>
+                <span>A professional</span>
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Sparkles className={`w-4 h-4 text-yellow-400 transition-all duration-300 ${isHovered ? 'animate-spin text-yellow-300' : 'animate-pulse'
-              }`} />
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -117,7 +128,7 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
                   console.error('No author ID found in post data');
                 }
               }}
-              className="text-blue-400 hover:text-blue-300 transition-colors text-xs font-medium hover:underline cursor-pointer z-10 relative"
+              className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-medium hover:underline cursor-pointer z-10 relative"
             >
               View Profile
             </button>
@@ -126,11 +137,24 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
 
         {/* Bio */}
         <div className="mb-4 relative">
-          <div className="bg-gray-800/60 rounded-lg p-3 backdrop-blur-sm border border-gray-600/30 hover:border-purple-500/30 transition-all duration-300">
-            <p className="text-sm font-semibold text-white mb-1">
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-blue-300 transition-all duration-300">
+            <p className="text-sm font-semibold text-gray-900 mb-1">
               {post.title}
             </p>
-            <p className="text-gray-400 text-xs line-clamp-2">{post.description}</p>
+            <div className="text-gray-600 text-xs">
+              <span>{getFirstLineDescription(post.description)}</span>
+              {shouldShowSeeMore(post.description) && (
+                <>
+                  {!post.description.split('\n')[0].endsWith('...') && ' '}
+                  <button
+                    onClick={handleSeeMore}
+                    className="text-blue-600 hover:text-blue-700 font-medium hover:underline ml-1 cursor-pointer"
+                  >
+                    See More
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -138,18 +162,18 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
         <div className="space-y-3 mb-4">
           {/* Skills to Teach */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-300 mb-2 flex items-center space-x-1">
-              <Code className="w-3 h-3 text-green-400" />
+            <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Skills to Teach:</span>
             </h3>
             <div className="flex flex-wrap gap-1">
               {post.skills_to_teach?.slice(0, 3).map((skill, index) => (
-                <span key={index} className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 cursor-pointer">
+                <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium hover:bg-green-200 transition-all duration-300 cursor-pointer">
                   {skill}
                 </span>
               ))}
               {post.skills_to_teach?.length > 3 && (
-                <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
                   +{post.skills_to_teach.length - 3}
                 </span>
               )}
@@ -158,18 +182,18 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
 
           {/* Skills to Learn */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-300 mb-2 flex items-center space-x-1">
-              <Globe className="w-3 h-3 text-blue-400" />
+            <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center space-x-1">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span>Skills to Learn:</span>
             </h3>
             <div className="flex flex-wrap gap-1">
               {post.skills_to_learn?.slice(0, 3).map((skill, index) => (
-                <span key={index} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105 cursor-pointer">
+                <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-200 transition-all duration-300 cursor-pointer">
                   {skill}
                 </span>
               ))}
               {post.skills_to_learn?.length > 3 && (
-                <span className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
                   +{post.skills_to_learn.length - 3}
                 </span>
               )}

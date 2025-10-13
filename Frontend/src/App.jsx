@@ -20,6 +20,7 @@ import Meetings from './pages/Meetings';
 import Badges from './pages/Badges';
 import AdminDashboard from './pages/AdminDashboard';
 import Recommendations from './pages/Recommendations';
+import PostDetails from './pages/PostDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -48,6 +49,11 @@ function App() {
               <Route path="/discover" element={
                 <ProtectedRoute>
                   <Discover />
+                </ProtectedRoute>
+              } />
+              <Route path="/post/:postId" element={
+                <ProtectedRoute>
+                  <PostDetails />
                 </ProtectedRoute>
               } />
               <Route path="/profile" element={

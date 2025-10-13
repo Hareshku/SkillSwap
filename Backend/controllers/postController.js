@@ -263,14 +263,8 @@ export const getPost = async (req, res) => {
       include: [
         {
           model: User,
-          as: 'user',
-          attributes: { exclude: ['password'] },
-          include: [
-            {
-              model: Skill,
-              as: 'skills'
-            }
-          ]
+          as: 'author',
+          attributes: { exclude: ['password'] }
         }
       ]
     });

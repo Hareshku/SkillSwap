@@ -336,7 +336,6 @@ export const completeProfile = async (req, res) => {
     });
   }
 };
-
 // Logout (client-side token removal, but we can track it)
 export const logout = async (req, res) => {
   try {

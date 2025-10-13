@@ -245,30 +245,30 @@ const Discover = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Discover Skills
               </h1>
-              <p className="text-gray-300 mt-2">
+              <p className="text-gray-600 mt-2">
                 Find learning opportunities and connect with fellow learners
               </p>
             </div>
             <button
               onClick={handleCreatePostClick}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-purple-500/25"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-lg"
             >
-              Create Post
+              + Create Post
             </button>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-gray-900/60 backdrop-blur-sm rounded-lg shadow-lg border border-gray-700/50 p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <input
@@ -277,12 +277,12 @@ const Discover = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Search posts by title, skills, or description..."
-                className="w-full px-4 py-2 bg-gray-800/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400 pr-10"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 pr-10"
               />
               {(searchQuery || isSearchMode) && (
                 <button
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                   title="Clear search"
                 >
                   ×
@@ -292,14 +292,14 @@ const Discover = () => {
             <div className="flex gap-2">
               <button
                 onClick={handleSearch}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg"
               >
                 Search
               </button>
               {(searchQuery || isSearchMode) && (
                 <button
                   onClick={handleClearSearch}
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-300"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-all duration-300"
                 >
                   Clear
                 </button>
@@ -312,15 +312,15 @@ const Discover = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
           {loading ? (
             <div className="col-span-full text-center py-12">
-              <div className="text-gray-300">Loading posts...</div>
+              <div className="text-gray-600">Loading posts...</div>
             </div>
           ) : posts.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="text-6xl mb-4">{isSearchMode ? '🔍' : '📝'}</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {isSearchMode ? 'No results found' : 'No posts found'}
               </h3>
-              <p className="text-gray-300 mb-4">
+              <p className="text-gray-600 mb-4">
                 {isSearchMode 
                   ? `No posts found matching "${searchQuery}". Try a different search term.`
                   : 'Be the first to create a skill exchange post!'
@@ -329,7 +329,7 @@ const Discover = () => {
               {!isSearchMode && (
                 <button
                   onClick={handleCreatePostClick}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg"
                 >
                   Create Your First Post
                 </button>

@@ -341,7 +341,6 @@ const Messages = () => {
                       </div>
                     </div>
                   </div>
-
                   {/* Messages */}
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.length === 0 ? (
@@ -383,7 +382,6 @@ const Messages = () => {
                       ))
                     )}
                   </div>
-
                   {/* Message Input */}
                   <div className="p-4 border-t border-gray-200 bg-white">
                     <form onSubmit={sendMessage} className="flex space-x-3">

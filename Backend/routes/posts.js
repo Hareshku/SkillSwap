@@ -109,8 +109,8 @@ const paginationValidation = [
 
 const postIdValidation = [
   param('postId')
-    .isUUID()
-    .withMessage('Invalid post ID')
+    .isInt({ min: 1 })
+    .withMessage('Post ID must be a valid positive integer')
 ];
 
 // Routes
