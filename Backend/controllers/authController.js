@@ -413,7 +413,7 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// Reset password
+// Reset password when you forget it.
 export const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
