@@ -33,14 +33,14 @@ const About = () => {
                 Our Mission
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
-                <p class="text-[1.4rem]">
+                <p className="text-[1.4rem]">
                   At SkillSwap, our mission is to democratize knowledge sharing
                   and create a global community where everyone can learn from
                   each other. We believe that everyone has valuable skills and
                   knowledge to share, and we're committed to making skill
                   sharing accessible, enjoyable, and rewarding for all.
                 </p>
-                <p class="text-[1.4rem]">
+                <p className="text-[1.4rem]">
                   We're building a platform that connects people who want to
                   learn with those who want to teach, breaking down barriers to
                   education and creating opportunities for personal and
@@ -100,7 +100,6 @@ const About = () => {
             </div>
 
             {/* Bottom Right Image */}
-
           </div>
         </div>
       </div>
@@ -305,8 +304,8 @@ const About = () => {
               </h3>
               <p className="text-sm text-gray-500 mb-3">Supervisor</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Ms. Mariam Memon is passionate about education and believes in the power of
-                skill sharing to transform lives.
+                Ms. Mariam Memon is passionate about education and believes in
+                the power of skill sharing to transform lives.
               </p>
             </div>
 
@@ -357,13 +356,11 @@ const About = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-1">
-                Khushal
-              </h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-1">Khushal</h3>
               <p className="text-sm text-gray-500 mb-3">Java Developer</p>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Khushal focuses on creating an intuitive and enjoyable experience
-                for both learners and teachers.
+                Khushal focuses on creating an intuitive and enjoyable
+                experience for both learners and teachers.
               </p>
             </div>
           </div>
