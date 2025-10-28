@@ -6,7 +6,9 @@ import {
   getAllBadges,
   getUserBadges,
   getUserBadgeProgress,
-  toggleBadgeDisplay
+  toggleBadgeDisplay,
+  checkUserBadges,
+  getDetailedBadgeProgress
 } from '../controllers/badgeController.js';
 
 const router = express.Router();
@@ -75,6 +77,34 @@ router.get('/user/:userId/progress',
   userIdValidation,
   validateRequest,
   getUserBadgeProgress
+);
+
+// Check and award badges for a user
+router.post('/user/:userId/check',
+  authenticateToken,
+  userIdValidation,
+  validateRequest,
+  checkUserBadges
+);
+
+// Check badges for current user
+router.post('/check',
+  authenticateToken,
+  checkUserBadges
+);
+
+// Get detailed badge progress
+router.get('/user/:userId/detailed-progress',
+  authenticateToken,
+  userIdValidation,
+  validateRequest,
+  getDetailedBadgeProgress
+);
+
+// Get detailed progress for current user
+router.get('/detailed-progress',
+  authenticateToken,
+  getDetailedBadgeProgress
 );
 
 // Toggle badge display on profile

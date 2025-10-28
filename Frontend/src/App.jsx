@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import BadgeNotificationProvider from './components/BadgeNotificationProvider';
 import Home from './pages/Home';
 import About from './pages/About';
 import Discover from './pages/Discover';
@@ -27,84 +28,86 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/community-registration" element={
-                <ProtectedRoute>
-                  <CommunityRegistration />
-                </ProtectedRoute>
-              } />
+        <BadgeNotificationProvider>
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+            <Navbar />
+            <main className="flex-grow">
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/community-registration" element={
+                  <ProtectedRoute>
+                    <CommunityRegistration />
+                  </ProtectedRoute>
+                } />
 
-              {/* Protected Routes */}
-              <Route path="/discover" element={
-                <ProtectedRoute>
-                  <Discover />
-                </ProtectedRoute>
-              } />
-              <Route path="/post/:postId" element={
-                <ProtectedRoute>
-                  <PostDetails />
-                </ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <OwnProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/profile/:userId" element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/connection-requests" element={
-                <ProtectedRoute>
-                  <ConnectionRequests />
-                </ProtectedRoute>
-              } />
-              <Route path="/messages" element={
-                <ProtectedRoute>
-                  <Messages />
-                </ProtectedRoute>
-              } />
-              <Route path="/meetings" element={
-                <ProtectedRoute>
-                  <Meetings />
-                </ProtectedRoute>
-              } />
-              <Route path="/badges" element={
-                <ProtectedRoute>
-                  <Badges />
-                </ProtectedRoute>
-              } />
-              <Route path="/recommendations" element={
-                <ProtectedRoute>
-                  <Recommendations />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin" element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+                {/* Protected Routes */}
+                <Route path="/discover" element={
+                  <ProtectedRoute>
+                    <Discover />
+                  </ProtectedRoute>
+                } />
+                <Route path="/post/:postId" element={
+                  <ProtectedRoute>
+                    <PostDetails />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <OwnProfile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile/:userId" element={
+                  <ProtectedRoute>
+                    <UserProfile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/connection-requests" element={
+                  <ProtectedRoute>
+                    <ConnectionRequests />
+                  </ProtectedRoute>
+                } />
+                <Route path="/messages" element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                } />
+                <Route path="/meetings" element={
+                  <ProtectedRoute>
+                    <Meetings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/badges" element={
+                  <ProtectedRoute>
+                    <Badges />
+                  </ProtectedRoute>
+                } />
+                <Route path="/recommendations" element={
+                  <ProtectedRoute>
+                    <Recommendations />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </BadgeNotificationProvider>
       </Router>
     </AuthProvider>
   );

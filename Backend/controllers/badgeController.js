@@ -1,5 +1,6 @@
 import { Badge, UserBadge, User } from '../models/index.js';
 import { Op } from 'sequelize';
+import BadgeService from '../services/badgeService.js';
 
 // Get all available badges
 export const getAllBadges = async (req, res) => {
@@ -173,6 +174,75 @@ export const getUserBadgeProgress = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch badge progress'
+    });
+  }
+};
+
+// Check and award badges for a user
+export const checkUserBadges = async (req, res) => {
+  try {
+    const userId = req.params.userId || req.user.id;
+
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check and award new badges
+    const newBadges = await BadgeService.checkAndAwardBadges(userId);
+
+    res.status(200).json({
+      success: true,
+      message: `Badge check completed. ${newBadges.length} new badges earned.`,
+      data: {
+        newBadges,
+        newBadgeCount: newBadges.length
+      }
+    });
+  } catch (error) {
+    console.error('Error checking user badges:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to check user badges'
+    });
+  }
+};
+
+// Get detailed badge progress for a user
+export const getDetailedBadgeProgress = async (req, res) => {
+  try {
+    const userId = req.params.userId || req.user.id;
+
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const progress = await BadgeService.getUserBadgeProgress(userId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Detailed badge progress retrieved successfully',
+      data: {
+        progress,
+        totalBadges: progress.length,
+        earnedBadges: progress.filter(p => p.isEarned).length,
+        completionPercentage: Math.round((progress.filter(p => p.isEarned).length / progress.length) * 100)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching detailed badge progress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch detailed badge progress'
     });
   }
 };

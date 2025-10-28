@@ -1,5 +1,6 @@
 import { Post, User, Skill, sequelize } from '../models/index.js';
 import { Op } from 'sequelize';
+import BadgeService from '../services/badgeService.js';
 
 // Create a new post
 export const createPost = async (req, res) => {

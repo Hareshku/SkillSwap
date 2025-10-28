@@ -1,5 +1,6 @@
 import { Review, User, Meeting } from '../models/index.js';
 import { Op } from 'sequelize';
+import BadgeService from '../services/badgeService.js';
 
 // Create a new review
 export const createReview = async (req, res) => {

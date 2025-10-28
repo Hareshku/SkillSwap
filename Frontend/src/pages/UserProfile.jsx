@@ -7,6 +7,7 @@ import ReportModal from '../components/ReportModal';
 import ReviewModal from '../components/ReviewModal';
 import Rating from '../components/Rating';
 import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
+import FeedbackDisplay from '../components/FeedbackDisplay';
 import axios from 'axios';
 
 // UserPosts component
@@ -488,6 +489,12 @@ const UserProfile = () => {
               <div className="mb-6 sm:mb-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">Recent Posts</h2>
                 <UserPosts userId={userId} />
+              </div>
+
+              {/* Feedback Section */}
+              <div className="mb-6 sm:mb-8">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">💬 Feedback & Reviews</h2>
+                <FeedbackDisplay userId={userId} maxDisplay={3} />
               </div>
 
               {/* Reviews and Rating Section */}

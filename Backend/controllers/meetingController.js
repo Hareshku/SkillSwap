@@ -1,5 +1,6 @@
 import { Meeting, User } from '../models/index.js';
 import { Op } from 'sequelize';
+import BadgeService from '../services/badgeService.js';
 
 // Schedule a meeting
 export const scheduleMeeting = async (req, res) => {
@@ -505,6 +506,20 @@ export const completeMeeting = async (req, res) => {
       notes: notes,
       completed_at: new Date()
     });
+
+    // Check for new badges for both organizer and participant
+    try {
+      const organizerBadges = await BadgeService.checkAndAwardBadges(meeting.organizer_id);
+      const participantBadges = await BadgeService.checkAndAwardBadges(meeting.participant_id);
+
+      const totalNewBadges = organizerBadges.length + participantBadges.length;
+      if (totalNewBadges > 0) {
+        console.log(`🎉 ${totalNewBadges} new badges awarded after meeting completion`);
+      }
+    } catch (badgeError) {
+      console.error('Error checking badges after meeting completion:', badgeError);
+      // Don't fail the meeting completion if badge checking fails
+    }
 
     res.json({
       success: true,

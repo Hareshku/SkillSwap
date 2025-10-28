@@ -24,6 +24,7 @@ import badgeRoutes from './routes/badges.js';
 import recommendationRoutes from './routes/recommendations.js';
 import contactRoutes from './routes/contact.js';
 import reviewRoutes from './routes/reviews.js';
+import feedbackRoutes from './routes/feedback.js';
 
 // Load environment variables
 dotenv.config();
@@ -124,6 +125,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/badges', badgeRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Socket.IO for real-time messaging
 io.on('connection', (socket) => {

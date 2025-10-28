@@ -9,6 +9,9 @@
     "seed:users": "node scripts/seedUsers.js",
     "seed:admin": "node scripts/createDefaultAdmin.js",
     "seed:posts": "node scripts/seedPosts.js",
+    "seed:badges": "node scripts/seedImageBadges.js",
+    "test:badges": "node scripts/testBadgeSystem.js",
+    "test:complete": "node scripts/testCompleteSystem.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
