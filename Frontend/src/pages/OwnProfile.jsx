@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import PasswordChangeModal from "../components/PasswordChangeModal";
 import BadgeDisplay from "../components/BadgeDisplay";
+import FeedbackModal from "../components/FeedbackModal";
 import axios from "axios";
 
 // RecommendedPosts component
@@ -183,11 +184,10 @@ const RecommendedPosts = () => {
                   return (
                     <span
                       key={index}
-                      className={`text-xs px-2 py-1 rounded ${
-                        isMatched
-                          ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                          : "bg-green-50 text-green-700"
-                      }`}
+                      className={`text-xs px-2 py-1 rounded ${isMatched
+                        ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
+                        : "bg-green-50 text-green-700"
+                        }`}
                     >
                       {skill} {isMatched && "🤝"}
                     </span>
@@ -211,11 +211,10 @@ const RecommendedPosts = () => {
                   return (
                     <span
                       key={index}
-                      className={`text-xs px-2 py-1 rounded ${
-                        isMatched
-                          ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                          : "bg-blue-50 text-blue-700"
-                      }`}
+                      className={`text-xs px-2 py-1 rounded ${isMatched
+                        ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
+                        : "bg-blue-50 text-blue-700"
+                        }`}
                     >
                       {skill} {isMatched && "⭐"}
                     </span>
@@ -255,10 +254,10 @@ const RecommendedPosts = () => {
               <span className="text-xs text-gray-500">
                 {post.created_at
                   ? new Date(post.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
                   : "Date not available"}
               </span>
               <button
@@ -298,6 +297,7 @@ const OwnProfile = () => {
   const [pendingRequests, setPendingRequests] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   const {
     register,
@@ -380,10 +380,10 @@ const OwnProfile = () => {
       const meetings = meetingsResponse.data.data?.meetings || [];
       const pendingInvitations = Array.isArray(meetings)
         ? meetings.filter(
-            (meeting) =>
-              meeting.participant_id === user?.id &&
-              meeting.status === "pending"
-          )
+          (meeting) =>
+            meeting.participant_id === user?.id &&
+            meeting.status === "pending"
+        )
         : [];
       setPendingMeetings(pendingInvitations.length);
 
@@ -648,7 +648,7 @@ const OwnProfile = () => {
               <p className="text-lg sm:text-xl opacity-90 mb-1">
                 {displayData?.profession
                   ? displayData.profession.charAt(0).toUpperCase() +
-                    displayData.profession.slice(1)
+                  displayData.profession.slice(1)
                   : "Add profession"}
               </p>
               <p className="text-base sm:text-lg opacity-80 mb-2 sm:mb-4">
@@ -783,6 +783,25 @@ const OwnProfile = () => {
                 )}
               </div>
               <span className="text-sm sm:text-base">Requests</span>
+            </button>
+            <button
+              onClick={() => setShowFeedbackModal(true)}
+              className="flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 border-transparent hover:border-purple-500 text-gray-600 hover:text-purple-600 transition-colors whitespace-nowrap"
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <span className="text-sm sm:text-base">View Feedbacks</span>
             </button>
           </div>
         </div>
@@ -962,11 +981,10 @@ const OwnProfile = () => {
                       {skills.map((skill, index) => (
                         <span
                           key={index}
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                            skill.skill_type === "teach"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${skill.skill_type === "teach"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-green-100 text-green-800"
+                            }`}
                         >
                           {skill.skill_name}
                           <button
@@ -1109,11 +1127,10 @@ const OwnProfile = () => {
                         skills.map((skill, index) => (
                           <span
                             key={index}
-                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${
-                              skill.skill_type === "teach"
-                                ? "bg-blue-100 text-blue-800 border border-blue-200"
-                                : "bg-green-100 text-green-800 border border-green-200"
-                            }`}
+                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${skill.skill_type === "teach"
+                              ? "bg-blue-100 text-blue-800 border border-blue-200"
+                              : "bg-green-100 text-green-800 border border-green-200"
+                              }`}
                           >
                             {skill.skill_name}
                             <span className="ml-1 sm:ml-2 text-xs opacity-75">
@@ -1155,11 +1172,10 @@ const OwnProfile = () => {
                         </span>
                         <p className="text-gray-900 text-sm sm:text-base">
                           {displayData?.state
-                            ? `${displayData.state}${
-                                displayData?.country
-                                  ? `, ${displayData.country}`
-                                  : ""
-                              }`
+                            ? `${displayData.state}${displayData?.country
+                              ? `, ${displayData.country}`
+                              : ""
+                            }`
                             : "Not specified"}
                         </p>
                       </div>
@@ -1178,11 +1194,11 @@ const OwnProfile = () => {
                         <p className="text-gray-900 text-sm sm:text-base">
                           {displayData?.created_at
                             ? new Date(
-                                displayData.created_at
-                              ).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                              })
+                              displayData.created_at
+                            ).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                            })
                             : "Not available"}
                         </p>
                       </div>
@@ -1240,6 +1256,15 @@ const OwnProfile = () => {
         <PasswordChangeModal
           isOpen={showPasswordModal}
           onClose={() => setShowPasswordModal(false)}
+        />
+      )}
+
+      {showFeedbackModal && (
+        <FeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(false)}
+          userId={user?.id}
+          userName={user?.full_name || user?.username}
         />
       )}
     </div>

@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ScheduleModal from '../components/ScheduleModal';
 import ReportModal from '../components/ReportModal';
 import ReviewModal from '../components/ReviewModal';
+import AchievementsModal from '../components/AchievementsModal';
 import Rating from '../components/Rating';
 import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
 import FeedbackDisplay from '../components/FeedbackDisplay';
@@ -138,6 +139,7 @@ const UserProfile = () => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showAchievementsModal, setShowAchievementsModal] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState(null);
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
@@ -424,7 +426,16 @@ const UserProfile = () => {
               </svg>
               <span>Review</span>
             </button>
-
+            {/* Achievements Button */}
+            <button
+              onClick={() => setShowAchievementsModal(true)}
+              className="bg-orange-600 text-white px-3 sm:px-6 lg:px-8 py-2 sm:py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-1 sm:space-x-2 font-semibold text-sm sm:text-base lg:text-lg lg:min-w-[140px]"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              <span>Achievements</span>
+            </button>
             {/* Report Button */}
             <button
               onClick={() => {
@@ -464,20 +475,41 @@ const UserProfile = () => {
                 <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
                   <div className="flex flex-wrap gap-2 sm:gap-3">
                     {skills.length > 0 ? (
-                      skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${skill.skill_type === 'teach'
-                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                            : 'bg-green-100 text-green-800 border border-green-200'
-                            }`}
-                        >
-                          {skill.skill_name}
-                          <span className="ml-1 sm:ml-2 text-xs opacity-75">
-                            ({skill.skill_type === 'teach' ? 'Can Teach' : 'Learning'})
-                          </span>
-                        </span>
-                      ))
+                      skills.map((skill, index) => {
+                        // Handle both old format (skill_name, skill_type) and new format (name, UserSkill)
+                        const skillName = skill.skill_name || skill.name;
+                        const canTeach = skill.skill_type === 'teach' || skill.UserSkill?.can_teach;
+                        const wantsToLearn = skill.skill_type === 'learn' || skill.UserSkill?.wants_to_learn;
+
+                        return (
+                          <div key={index} className="flex flex-col gap-1">
+                            {/* Show teaching badge if can teach */}
+                            {canTeach && (
+                              <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                {skillName}
+                                <span className="ml-1 sm:ml-2 text-xs opacity-75">
+                                  (Can Teach)
+                                </span>
+                              </span>
+                            )}
+                            {/* Show learning badge if wants to learn */}
+                            {wantsToLearn && (
+                              <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                                {skillName}
+                                <span className="ml-1 sm:ml-2 text-xs opacity-75">
+                                  (Learning)
+                                </span>
+                              </span>
+                            )}
+                            {/* Fallback for old format or if neither teach nor learn */}
+                            {!canTeach && !wantsToLearn && (
+                              <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                {skillName}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })
                     ) : (
                       <p className="text-gray-500 text-sm sm:text-base">No skills listed yet.</p>
                     )}
@@ -672,6 +704,15 @@ const UserProfile = () => {
             fetchUserProfile();
             setShowReviewModal(false);
           }}
+        />
+      )}
+
+      {showAchievementsModal && (
+        <AchievementsModal
+          isOpen={showAchievementsModal}
+          onClose={() => setShowAchievementsModal(false)}
+          userId={userId}
+          userName={profileData?.full_name || profileData?.username}
         />
       )}
     </div>
