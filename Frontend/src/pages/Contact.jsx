@@ -212,7 +212,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
+                      <p className="text-gray-600">+92 3333333333</p>
                     </div>
                   </div>
 
@@ -225,7 +225,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Address</h3>
-                      <p className="text-gray-600">123 Skill Street, Techville, CA 90001</p>
+                      <p className="text-gray-600">Rashidi hostel MUET Jamshoro </p>
                     </div>
                   </div>
                 </div>

@@ -38,9 +38,9 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
     if (!description) return "";
     // Split by new lines and take the first line
     const firstLine = description.split("\n")[0];
-    // If the first line is too long (more than 80 characters), truncate it
-    if (firstLine.length > 80) {
-      return firstLine.substring(0, 77) + "...";
+    // If the first line is too long (more than 60 characters for card layout), truncate it
+    if (firstLine.length > 60) {
+      return firstLine.substring(0, 57) + "...";
     }
     return firstLine;
   };
@@ -49,7 +49,7 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
     if (!description) return false;
     const firstLine = description.split("\n")[0];
     // Show "See More" if there are multiple lines OR if the first line was truncated
-    return description.split("\n").length > 1 || firstLine.length > 80;
+    return description.split("\n").length > 1 || firstLine.length > 60;
   };
 
   const handleSeeMore = (e) => {
@@ -59,29 +59,26 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
 
   return (
     <div
-      className={`relative group transition-all duration-500 transform max-w-sm w-full ${
-        isHovered ? "scale-105" : "hover:scale-102"
-      }`}
+      className={`relative group transition-all duration-500 transform max-w-sm w-full ${isHovered ? "scale-105" : "hover:scale-102"
+        }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
       style={{
         transform: isHovered
-          ? `scale(1.05) rotateX(${(mousePosition.y - 50) * 0.05}deg) rotateY(${
-              (mousePosition.x - 50) * 0.05
-            }deg)`
+          ? `scale(1.05) rotateX(${(mousePosition.y - 50) * 0.05}deg) rotateY(${(mousePosition.x - 50) * 0.05
+          }deg)`
           : "scale(1)",
       }}
     >
-      {/* Main card */}
-      <div className="relative bg-white rounded-xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
+      {/* Main card with fixed height */}
+      <div className="relative bg-white rounded-xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 h-80 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div
-              className={`relative transition-all duration-300 ${
-                isHovered ? "scale-110 rotate-6" : ""
-              }`}
+              className={`relative transition-all duration-300 ${isHovered ? "scale-110 rotate-6" : ""
+                }`}
             >
               <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
                 {post.author?.profile_picture ? (
@@ -142,30 +139,36 @@ const SkillExchangeCard = ({ post, onViewProfile }) => {
         </div>
 
         {/* Bio */}
-        <div className="mb-4 relative">
+        <div className="mb-4 relative flex-grow">
           <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-blue-300 transition-all duration-300">
-            <p className="text-sm font-semibold text-gray-900 mb-1">
+            <p
+              className="text-sm font-semibold text-gray-900 mb-1 truncate cursor-pointer hover:text-blue-600 transition-colors"
+              title={post.title}
+              onClick={handleSeeMore}
+            >
               {post.title}
             </p>
             <div className="text-gray-600 text-xs">
-              <span>{getFirstLineDescription(post.description)}</span>
+              <span
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={handleSeeMore}
+              >
+                {getFirstLineDescription(post.description)}
+              </span>
               {shouldShowSeeMore(post.description) && (
-                <>
-                  {!post.description.split("\n")[0].endsWith("...") && " "}
-                  <button
-                    onClick={handleSeeMore}
-                    className="text-blue-600 hover:text-blue-700 font-medium hover:underline ml-1 cursor-pointer"
-                  >
-                    See More
-                  </button>
-                </>
+                <button
+                  onClick={handleSeeMore}
+                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline ml-1 cursor-pointer"
+                >
+                  {getFirstLineDescription(post.description).endsWith("...") ? " see more" : "... see more"}
+                </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Skills - Compact layout */}
-        <div className="space-y-3 mb-4">
+        {/* Skills - Compact layout at bottom */}
+        <div className="space-y-3 mt-auto">
           {/* Skills to Teach */}
           <div>
             <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center space-x-1">
