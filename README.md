@@ -1,3 +1,4 @@
-**SkillSwap: A Web Platform for Peer-to-Peer Skill Trading**
+**SkillSwap: A Web Platform for Peer-to-Peer Skill Trading**.
+
 Many students, freelancers, and individuals have skills they can share but limited financial resources to access courses or services to learn new ones. While there are paid platforms for freelancing (like Fiverr) or language learning (like Duolingo), there is a lack of a free and fair platform where people can exchange skills without using money. This creates a barrier to self-improvement and community-based learning, especially for learners from underprivileged backgrounds.
 SkillSwap is a web-based platform designed to let users list skills they can offer and skills they want to learn. The system will match users based on complementary skill needs (e.g., someone who knows JavaScript but wants to learn Java, and vice versa). Users can chat, schedule skill exchange sessions, leave feedback, and earn badges for their contributions all without involving money. It promotes community learning and skill building through mutual collaboration.
