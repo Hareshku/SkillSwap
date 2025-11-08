@@ -74,8 +74,12 @@ const BadgeDisplay = ({ userId, showAll = false, maxDisplay = 3 }) => {
 
   if (badges.length === 0) {
     return (
-      <div className="text-center py-4">
-        <div className="text-gray-400 text-sm">No badges to display</div>
+      <div className="text-center py-8">
+        <div className="text-6xl mb-4">🏆</div>
+        <div className="text-gray-600 text-base font-medium mb-2">No badges earned yet</div>
+        <div className="text-gray-500 text-sm">
+          Your earned badges and achievements will be displayed here
+        </div>
       </div>
     );
   }
@@ -105,10 +109,10 @@ const BadgeDisplay = ({ userId, showAll = false, maxDisplay = 3 }) => {
                 {/* Rarity Indicator */}
                 <div className="absolute -top-1 -right-1">
                   <div className={`w-3 h-3 rounded-full ${badge.rarity === 'legendary' ? 'bg-yellow-400' :
-                      badge.rarity === 'epic' ? 'bg-purple-400' :
-                        badge.rarity === 'rare' ? 'bg-blue-400' :
-                          badge.rarity === 'uncommon' ? 'bg-green-400' :
-                            'bg-gray-400'
+                    badge.rarity === 'epic' ? 'bg-purple-400' :
+                      badge.rarity === 'rare' ? 'bg-blue-400' :
+                        badge.rarity === 'uncommon' ? 'bg-green-400' :
+                          'bg-gray-400'
                     }`}></div>
                 </div>
               </div>

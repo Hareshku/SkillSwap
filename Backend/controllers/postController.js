@@ -457,7 +457,7 @@ export const getSearchSuggestions = async (req, res) => {
       // Add skills from skills_to_teach
       if (post.skills_to_teach && Array.isArray(post.skills_to_teach)) {
         post.skills_to_teach.forEach(skill => {
-          if (skill.toLowerCase().includes(searchTerm.toLowerCase())) {
+          if (skill.toLowerCase().startsWith(searchTerm.toLowerCase())) {
             allSkills.add(skill);
           }
         });
@@ -466,7 +466,7 @@ export const getSearchSuggestions = async (req, res) => {
       // Add skills from skills_to_learn
       if (post.skills_to_learn && Array.isArray(post.skills_to_learn)) {
         post.skills_to_learn.forEach(skill => {
-          if (skill.toLowerCase().includes(searchTerm.toLowerCase())) {
+          if (skill.toLowerCase().startsWith(searchTerm.toLowerCase())) {
             allSkills.add(skill);
           }
         });

@@ -138,7 +138,14 @@ const RecommendedPosts = () => {
                 )}
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900">
+                <h4
+                  className="font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => {
+                    if (post.author?.id) {
+                      navigate(`/profile/${post.author.id}`);
+                    }
+                  }}
+                >
                   {post.author?.full_name || "Unknown User"}
                 </h4>
                 <p className="text-sm text-gray-500">
@@ -263,7 +270,7 @@ const RecommendedPosts = () => {
               <button
                 onClick={() => {
                   trackInteraction(post.id, "click");
-                  navigate("/discover");
+                  navigate(`/post/${post.id}`);
                 }}
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
@@ -1246,7 +1253,7 @@ const OwnProfile = () => {
                 View All →
               </button>
             </div>
-            <BadgeDisplay badges={userBadges} />
+            <BadgeDisplay userId={user?.id} maxDisplay={6} />
           </div>
         </div>
       </div>

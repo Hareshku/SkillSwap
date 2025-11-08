@@ -27,8 +27,8 @@ const About = () => {
           style={{ maxWidth: "100rem" }}
         >
           <div className="flex flex-col lg:flex-row gap-12 items-center">
-            {/* Left side - Content (70% width) */}
-            <div className="lg:w-7/10" style={{ width: "70%" }}>
+            {/* Left side - Content (100% on mobile, 70% on large screens) */}
+            <div className="w-full lg:w-[70%]">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
                 Our Mission
               </h2>
