@@ -61,10 +61,7 @@ app.use('/api/', limiter);
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5000",
-  "http://localhost:5174", // Alternative port for development
-  "http://localhost:3000", // Common React port
-  "http://localhost:5175"  // Another common Vite port
+  process.env.FRONTEND_URL
 ];
 
 app.use(cors({
