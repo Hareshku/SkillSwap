@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const Badges = () => {
   const { user, token } = useAuth();
@@ -136,8 +136,8 @@ const Badges = () => {
             <button
               onClick={() => setActiveTab('earned')}
               className={`px-6 py-2 rounded-md font-medium transition-colors ${activeTab === 'earned'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               Earned ({earnedBadges.length})
@@ -145,8 +145,8 @@ const Badges = () => {
             <button
               onClick={() => setActiveTab('available')}
               className={`px-6 py-2 rounded-md font-medium transition-colors ${activeTab === 'available'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               Available ({availableBadges.length})

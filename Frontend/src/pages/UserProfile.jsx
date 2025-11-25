@@ -9,7 +9,7 @@ import AchievementsModal from '../components/AchievementsModal';
 import Rating from '../components/Rating';
 import OnlineStatusIndicator from '../components/OnlineStatusIndicator';
 import FeedbackDisplay from '../components/FeedbackDisplay';
-import axios from 'axios';
+import axios from '../api/axios';
 
 // UserPosts component
 const UserPosts = ({ userId }) => {

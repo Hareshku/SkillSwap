@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const ScheduleModal = ({ isOpen, onClose, participantUser }) => {
   const { token } = useAuth();

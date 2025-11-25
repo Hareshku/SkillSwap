@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const AuthContext = createContext();
 
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         try {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           const response = await axios.get('/api/auth/profile');
-          
+
           dispatch({
             type: 'AUTH_SUCCESS',
             payload: {
@@ -184,11 +184,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      
+
       const response = await axios.post('/api/auth/register', userData);
 
       const { user, token } = response.data.data;
-      
+
       dispatch({
         type: 'AUTH_SUCCESS',
         payload: { user, token }

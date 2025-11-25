@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const CommunityRegistration = () => {
   const { user, token, updateUser } = useAuth();

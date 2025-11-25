@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const ConnectionRequests = () => {
   const { token } = useAuth();
@@ -33,7 +33,7 @@ const ConnectionRequests = () => {
       await axios.put(`/api/connections/accept/${connectionId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       // Remove the accepted request from the list
       setRequests(requests.filter(request => request.id !== connectionId));
       alert('Connection request accepted!');
@@ -51,7 +51,7 @@ const ConnectionRequests = () => {
       await axios.put(`/api/connections/reject/${connectionId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       // Remove the rejected request from the list
       setRequests(requests.filter(request => request.id !== connectionId));
       alert('Connection request rejected');

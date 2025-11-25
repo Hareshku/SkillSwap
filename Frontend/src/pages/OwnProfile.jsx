@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PasswordChangeModal from "../components/PasswordChangeModal";
 import BadgeDisplay from "../components/BadgeDisplay";
 import FeedbackModal from "../components/FeedbackModal";
-import axios from "axios";
+import axios from "../api/axios";
 
 // RecommendedPosts component
 const RecommendedPosts = () => {

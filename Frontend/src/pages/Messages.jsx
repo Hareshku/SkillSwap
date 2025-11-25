@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../api/axios";
 import { formatDate, getRelativeTime } from "../utils/dateUtils";
 import OnlineStatusIndicator from "../components/OnlineStatusIndicator";
 
@@ -85,7 +85,7 @@ const Messages = () => {
       console.error("Error sending message:", error);
       alert(
         error.response?.data?.message ||
-          "Failed to send message. Please try again."
+        "Failed to send message. Please try again."
       );
     } finally {
       setSendingMessage(false);
@@ -212,12 +212,11 @@ const Messages = () => {
                     <div
                       key={conversation.partner.id}
                       onClick={() => selectConversation(conversation)}
-                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedConversation?.partner.id ===
-                        conversation.partner.id
+                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${selectedConversation?.partner.id ===
+                          conversation.partner.id
                           ? "bg-blue-50 border-blue-200"
                           : ""
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center space-x-3">
                         <button
@@ -351,29 +350,26 @@ const Messages = () => {
                       messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`flex ${
-                            message.sender_id ===
-                            selectedConversation.partner.id
+                          className={`flex ${message.sender_id ===
+                              selectedConversation.partner.id
                               ? "justify-start"
                               : "justify-end"
-                          }`}
+                            }`}
                         >
                           <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                              message.sender_id ===
-                              selectedConversation.partner.id
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.sender_id ===
+                                selectedConversation.partner.id
                                 ? "bg-gray-200 text-gray-900"
                                 : "bg-blue-600 text-white"
-                            }`}
+                              }`}
                           >
                             <p className="text-sm">{message.content}</p>
                             <p
-                              className={`text-xs mt-1 ${
-                                message.sender_id ===
-                                selectedConversation.partner.id
+                              className={`text-xs mt-1 ${message.sender_id ===
+                                  selectedConversation.partner.id
                                   ? "text-gray-500"
                                   : "text-blue-100"
-                              }`}
+                                }`}
                             >
                               {formatDate(message.created_at, "time")}
                             </p>

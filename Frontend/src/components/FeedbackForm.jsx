@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 const FeedbackForm = ({ receiverId, meetingId, postId, onFeedbackSubmitted, onCancel }) => {
@@ -91,8 +91,8 @@ const FeedbackForm = ({ receiverId, meetingId, postId, onFeedbackSubmitted, onCa
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, rating: star }))}
                 className={`text-2xl ${star <= formData.rating
-                    ? 'text-yellow-400'
-                    : 'text-gray-300'
+                  ? 'text-yellow-400'
+                  : 'text-gray-300'
                   } hover:text-yellow-400 transition-colors`}
               >
                 ⭐

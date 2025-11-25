@@ -7,7 +7,7 @@ import MessageModal from '../components/MessageModal';
 import ScheduleModal from '../components/ScheduleModal';
 import ReportModal from '../components/ReportModal';
 import BadgeDisplay from '../components/BadgeDisplay';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const Profile = () => {
   const { user, token } = useAuth();

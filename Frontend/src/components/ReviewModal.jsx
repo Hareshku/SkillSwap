@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Rating from './Rating';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const ReviewModal = ({
   isOpen,
